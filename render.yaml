@@ -1,0 +1,39 @@
+# Render Blueprint — defines all services for CivicEase
+# Deploy: connect this repo to Render and it will auto-detect this file.
+# Docs: https://docs.render.com/blueprint-spec
+
+services:
+  # ── FastAPI Backend ──
+  - type: web
+    name: civicease-api
+    runtime: python
+    region: oregon
+    rootDir: backend
+    buildCommand: ./build.sh
+    startCommand: gunicorn main:app --workers 2 --worker-class uvicorn.workers.UvicornWorker --bind 0.0.0.0:$PORT --timeout 120
+    envVars:
+      - key: DATABASE_URL
+        sync: false  # Set manually in Render dashboard
+      - key: CLOUDINARY_CLOUD_NAME
+        sync: false
+      - key: CLOUDINARY_API_KEY
+        sync: false
+      - key: CLOUDINARY_API_SECRET
+        sync: false
+      - key: PYTHON_VERSION
+        value: 3.12.0
+
+  # ── React Frontend (Static Site) ──
+  - type: web
+    name: civicease-web
+    runtime: static
+    rootDir: frontend
+    buildCommand: npm install && npm run build
+    staticPublishPath: dist
+    envVars:
+      - key: VITE_API_URL
+        sync: false  # Set to https://civicease-api.onrender.com
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
