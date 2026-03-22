@@ -120,7 +120,7 @@ export default function ComplaintList({ userId }) {
           <p className="text-slate-500 text-sm sm:text-base">Track and manage your reported issues</p>
         </div>
         <Link
-          to="/report"
+          to="/home/report"
           className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-lg text-white text-sm font-bold bg-gradient-to-r from-blue-600 to-cyan-600 shadow-lg shadow-blue-500/30 hover:shadow-xl hover:shadow-blue-500/40 hover:scale-[1.02] active:scale-[0.98] transition-all"
         >
           <Plus className="w-4 h-4" strokeWidth={3} />
@@ -140,7 +140,7 @@ export default function ComplaintList({ userId }) {
             <h3 className="text-lg font-bold text-slate-700 mb-1">No Complaints Yet</h3>
             <p className="text-sm text-slate-400 mb-8 max-w-xs mx-auto">You haven't filed any complaints yet. Start by reporting an issue in your community.</p>
             <Link
-              to="/report"
+              to="/home/report"
               className="inline-flex items-center gap-2 px-6 py-3 rounded-lg text-blue-700 text-sm font-bold bg-gradient-to-r from-blue-50 to-cyan-50 border border-blue-200/60 hover:shadow-md transition-all active:scale-95"
             >
               <Plus className="w-4 h-4" />

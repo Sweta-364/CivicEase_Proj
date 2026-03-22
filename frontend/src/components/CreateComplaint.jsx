@@ -31,7 +31,7 @@ export default function CreateComplaint() {
       await api.post('/complaints/', data, {
         headers: { 'Content-Type': 'multipart/form-data' }
       });
-      navigate('/');
+      navigate('/home/my-complaints');
     } catch (err) {
       console.error(err);
       alert(err.response?.data?.detail || 'Failed to submit complaint.');

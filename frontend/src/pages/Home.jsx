@@ -1,340 +1,144 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
-import {
-    Shield,
-    Clock,
-    Users,
-    TrendingUp,
-    CheckCircle2,
-    ArrowRight,
-    FileText,
-    Bell,
-    Award,
-    BarChart3,
-    AlertCircle
-} from 'lucide-react';
-import api from '../api';
+import { ArrowRight, Bell, ClipboardCheck, LayoutDashboard, Shield, Sparkles } from 'lucide-react';
+
+const featureCards = [
+  {
+    icon: ClipboardCheck,
+    title: 'Structured issue reporting',
+    description: 'Capture the problem with evidence, context, and a cleaner submission flow.',
+  },
+  {
+    icon: Bell,
+    title: 'Transparent status tracking',
+    description: 'Keep citizens aware of what is pending, in progress, or resolved.',
+  },
+  {
+    icon: Shield,
+    title: 'Admin resolution workflow',
+    description: 'Authorities can triage complaints, upload proof, and close the loop quickly.',
+  },
+];
+
+const steps = [
+  { title: 'Discover', description: 'Citizens land on the public site and understand the platform.' },
+  { title: 'Sign in', description: 'A dedicated `/signin` page acts as the handoff into the app.' },
+  { title: 'Work inside /home', description: 'Dashboard tools live in a protected workspace with persistent navigation.' },
+];
 
 export default function Home() {
-    const [complaints, setComplaints] = useState([]);
-    const [loading, setLoading] = useState(true);
+  return (
+    <div>
+      <section className="relative overflow-hidden">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(34,211,238,0.25),transparent_22%),radial-gradient(circle_at_80%_15%,rgba(14,165,233,0.18),transparent_20%),linear-gradient(135deg,#082f49_0%,#0f172a_45%,#111827_100%)]" />
+        <div className="relative mx-auto grid max-w-7xl gap-12 px-4 py-24 sm:px-6 lg:grid-cols-[1.1fr_0.9fr] lg:px-8 lg:py-32">
+          <div>
+            <span className="inline-flex items-center gap-2 rounded-full border border-cyan-400/20 bg-cyan-400/10 px-4 py-2 text-xs font-bold uppercase tracking-[0.22em] text-cyan-200">
+              <Sparkles className="h-4 w-4" />
+              Civic response re-architected
+            </span>
+            <h1 className="mt-8 max-w-4xl text-5xl font-black tracking-tight text-white sm:text-6xl lg:text-7xl">
+              Public landing outside.
+              <br />
+              <span className="text-cyan-300">Operational dashboard inside `/home`.</span>
+            </h1>
+            <p className="mt-6 max-w-2xl text-lg leading-8 text-slate-300 sm:text-xl">
+              CivicEase now follows a cleaner product flow inspired by `acm2k26`: users start on a focused landing
+              page, sign in intentionally, and then enter a dashboard workspace for complaint actions.
+            </p>
 
-    useEffect(() => {
-        const fetchComplaints = async () => {
-            try {
-                const response = await api.get('/complaints/');
-                // For now, showing all complaints. In production, filter by user_id
-                setComplaints(response.data);
-            } catch (error) {
-                console.error('Error fetching complaints:', error);
-            } finally {
-                setLoading(false);
-            }
-        };
-        fetchComplaints();
-    }, []);
+            <div className="mt-10 flex flex-col gap-4 sm:flex-row">
+              <Link
+                to="/signin"
+                className="inline-flex items-center justify-center gap-2 rounded-full bg-cyan-400 px-8 py-4 text-base font-black text-slate-950 shadow-2xl shadow-cyan-500/20 transition hover:scale-[1.02] hover:bg-cyan-300"
+              >
+                Sign in to dashboard
+                <ArrowRight className="h-5 w-5" />
+              </Link>
+              <Link
+                to="/how-it-works"
+                className="inline-flex items-center justify-center gap-2 rounded-full border border-white/15 bg-white/5 px-8 py-4 text-base font-semibold text-white transition hover:bg-white/10"
+              >
+                See the new flow
+              </Link>
+            </div>
+          </div>
 
-
-    const features = [
-        {
-            icon: FileText,
-            title: 'Easy Reporting',
-            description: 'Submit civic issues with photos and descriptions in under 2 minutes',
-            color: 'blue'
-        },
-        {
-            icon: Bell,
-            title: 'Real-time Updates',
-            description: 'Get instant notifications on the status of your reported issues',
-            color: 'cyan'
-        },
-        {
-            icon: Shield,
-            title: 'Transparent Process',
-            description: 'Track every step from submission to resolution with full visibility',
-            color: 'emerald'
-        },
-        {
-            icon: Award,
-            title: 'Verified Solutions',
-            description: 'All resolutions are documented with proof and admin verification',
-            color: 'amber'
-        }
-    ];
-
-    const categories = [
-        { name: 'Roads & Infrastructure', count: '2,341', icon: '🛣️' },
-        { name: 'Sanitation & Waste', count: '1,892', icon: '♻️' },
-        { name: 'Street Lighting', count: '1,456', icon: '💡' },
-        { name: 'Water Supply', count: '987', icon: '💧' },
-        { name: 'Parks & Recreation', count: '654', icon: '🌳' },
-        { name: 'Public Safety', count: '543', icon: '🚨' }
-    ];
-
-    const getStatusBadge = (status) => {
-        const styles = {
-            Pending: 'bg-amber-100 text-amber-700 border-amber-200',
-            Working: 'bg-blue-100 text-blue-700 border-blue-200',
-            Solved: 'bg-emerald-100 text-emerald-700 border-emerald-200',
-            Invalid: 'bg-red-100 text-red-700 border-red-200'
-        };
-        return styles[status] || styles.Pending;
-    };
-
-    return (
-        <div className="min-h-screen">
-            {/* Hero Section */}
-            <section className="relative -mt-8 sm:-mt-12 -mx-4 sm:-mx-6 lg:-mx-8 overflow-hidden">
-                {/* Background with gradient overlay */}
-                <div className="absolute inset-0 bg-gradient-to-br from-blue-900 via-blue-800 to-cyan-900">
-                    <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1449824913935-59a10b8d2000?auto=format&fit=crop&w=2000&q=80')] bg-cover bg-center opacity-20"></div>
-                    <div className="absolute inset-0 bg-gradient-to-b from-blue-900/80 via-blue-900/70 to-blue-900/90"></div>
-                </div>
-
-                {/* Content */}
-                <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 sm:py-32 lg:py-40">
-                    <div className="max-w-4xl">
-                        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-cyan-400/20 border border-cyan-400/30 text-cyan-300 text-sm font-bold mb-6 backdrop-blur-sm">
-                            <span className="w-2 h-2 bg-cyan-400 rounded-full animate-pulse"></span>
-                            Government of India Initiative
-                        </div>
-
-                        <h1 className="text-5xl sm:text-6xl lg:text-7xl font-black text-white mb-6 leading-tight tracking-tight">
-                            Building Better
-                            <br />
-                            <span className="bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">
-                                Communities Together
-                            </span>
-                        </h1>
-
-                        <p className="text-xl sm:text-2xl text-blue-100 mb-10 leading-relaxed max-w-2xl">
-                            A unified platform for citizens to report civic issues and track resolutions in real-time.
-                            Empowering transparency and accountability in governance.
-                        </p>
-
-                        <div className="flex flex-col sm:flex-row gap-4">
-                            <Link
-                                to="/report"
-                                className="group inline-flex items-center justify-center gap-2 px-8 py-4 rounded-xl text-blue-900 text-base font-bold bg-gradient-to-r from-cyan-400 to-blue-400 shadow-xl shadow-cyan-500/30 hover:shadow-2xl hover:shadow-cyan-500/40 hover:scale-105 transition-all"
-                            >
-                                Report an Issue
-                                <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-                            </Link>
-
-                            <Link
-                                to="/how-it-works"
-                                className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-xl text-white text-base font-bold bg-white/10 backdrop-blur-sm border-2 border-white/20 hover:bg-white/20 hover:border-white/30 transition-all"
-                            >
-                                Learn How It Works
-                            </Link>
-                        </div>
-                    </div>
-                </div>
-
-                {/* Decorative wave */}
-                <div className="absolute bottom-0 left-0 right-0">
-                    <svg className="w-full h-12 sm:h-16 text-white" preserveAspectRatio="none" viewBox="0 0 1200 120" fill="currentColor">
-                        <path d="M0,0V46.29c47.79,22.2,103.59,32.17,158,28,70.36-5.37,136.33-33.31,206.8-37.5C438.64,32.43,512.34,53.67,583,72.05c69.27,18,138.3,24.88,209.4,13.08,36.15-6,69.85-17.84,104.45-29.34C989.49,25,1113-14.29,1200,52.47V0Z" opacity=".25"></path>
-                        <path d="M0,0V15.81C13,36.92,27.64,56.86,47.69,72.05,99.41,111.27,165,111,224.58,91.58c31.15-10.15,60.09-26.07,89.67-39.8,40.92-19,84.73-46,130.83-49.67,36.26-2.85,70.9,9.42,98.6,31.56,31.77,25.39,62.32,62,103.63,73,40.44,10.79,81.35-6.69,119.13-24.28s75.16-39,116.92-43.05c59.73-5.85,113.28,22.88,168.9,38.84,30.2,8.66,59,6.17,87.09-7.5,22.43-10.89,48-26.93,60.65-49.24V0Z" opacity=".5"></path>
-                        <path d="M0,0V5.63C149.93,59,314.09,71.32,475.83,42.57c43-7.64,84.23-20.12,127.61-26.46,59-8.63,112.48,12.24,165.56,35.4C827.93,77.22,886,95.24,951.2,90c86.53-7,172.46-45.71,248.8-84.81V0Z"></path>
-                    </svg>
-                </div>
-            </section>
-
-
-            {/* Features Section */}
-            <section className="py-20 bg-gradient-to-b from-white to-slate-50">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="text-center mb-16">
-                        <h2 className="text-4xl sm:text-5xl font-black text-slate-900 mb-4">
-                            Why Choose CivicEase?
-                        </h2>
-                        <p className="text-lg text-slate-600 max-w-2xl mx-auto">
-                            A modern, transparent, and efficient platform designed for the digital age of governance
-                        </p>
-                    </div>
-
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-                        {features.map((feature, idx) => {
-                            const Icon = feature.icon;
-                            return (
-                                <div
-                                    key={idx}
-                                    className="group relative bg-white border border-slate-200/60 rounded-2xl p-8 hover:shadow-2xl hover:-translate-y-1 transition-all duration-300"
-                                >
-                                    <div className={`inline-flex p-4 rounded-2xl bg-gradient-to-br from-${feature.color}-500 to-${feature.color}-600 text-white mb-6 shadow-lg group-hover:scale-110 transition-transform`}>
-                                        <Icon className="w-8 h-8" />
-                                    </div>
-
-                                    <h3 className="text-xl font-bold text-slate-900 mb-3">
-                                        {feature.title}
-                                    </h3>
-
-                                    <p className="text-slate-600 leading-relaxed">
-                                        {feature.description}
-                                    </p>
-                                </div>
-                            );
-                        })}
-                    </div>
-                </div>
-            </section>
-
-            {/* Categories Section */}
-            <section className="py-20 bg-white">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="text-center mb-16">
-                        <h2 className="text-4xl sm:text-5xl font-black text-slate-900 mb-4">
-                            Service Categories
-                        </h2>
-                        <p className="text-lg text-slate-600 max-w-2xl mx-auto">
-                            Report issues across multiple civic service categories
-                        </p>
-                    </div>
-
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                        {categories.map((category, idx) => (
-                            <div
-                                key={idx}
-                                className="group flex items-center gap-4 bg-gradient-to-br from-white to-slate-50 border border-slate-200/60 rounded-xl p-6 hover:shadow-lg hover:border-blue-300 transition-all cursor-pointer"
-                            >
-                                <div className="text-4xl">{category.icon}</div>
-                                <div className="flex-1">
-                                    <h3 className="font-bold text-slate-900 mb-1 group-hover:text-blue-600 transition-colors">
-                                        {category.name}
-                                    </h3>
-                                    <p className="text-sm text-slate-500">
-                                        {category.count} reports handled
-                                    </p>
-                                </div>
-                                <ArrowRight className="w-5 h-5 text-slate-400 group-hover:text-blue-600 group-hover:translate-x-1 transition-all" />
-                            </div>
-                        ))}
-                    </div>
-                </div>
-            </section>
-
-            {/* My Complaints Section */}
-            <section className="py-20 bg-gradient-to-b from-slate-50 to-white">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="flex items-center justify-between mb-12">
-                        <div>
-                            <h2 className="text-4xl sm:text-5xl font-black text-slate-900 mb-4">
-                                My Complaints
-                            </h2>
-                            <p className="text-lg text-slate-600">
-                                Track the status of your reported issues
-                            </p>
-                        </div>
-                        <Link
-                            to="/my-complaints"
-                            className="hidden sm:inline-flex items-center gap-2 px-6 py-3 rounded-xl text-blue-600 text-sm font-bold bg-blue-50 border-2 border-blue-200 hover:bg-blue-100 hover:border-blue-300 transition-all"
-                        >
-                            View All
-                            <ArrowRight className="w-4 h-4" />
-                        </Link>
-                    </div>
-
-                    {loading ? (
-                        <div className="text-center py-12">
-                            <div className="inline-block w-12 h-12 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin"></div>
-                            <p className="mt-4 text-slate-600">Loading your complaints...</p>
-                        </div>
-                    ) : complaints.length === 0 ? (
-                        <div className="text-center py-16 bg-white border-2 border-dashed border-slate-200 rounded-2xl">
-                            <div className="inline-flex p-4 rounded-full bg-slate-100 mb-4">
-                                <AlertCircle className="w-8 h-8 text-slate-400" />
-                            </div>
-                            <h3 className="text-xl font-bold text-slate-900 mb-2">No Complaints Yet</h3>
-                            <p className="text-slate-600 mb-6">You haven't reported any issues yet</p>
-                            <Link
-                                to="/report"
-                                className="inline-flex items-center gap-2 px-6 py-3 rounded-xl text-white text-sm font-bold bg-gradient-to-r from-blue-600 to-cyan-600 hover:shadow-lg transition-all"
-                            >
-                                Report Your First Issue
-                                <ArrowRight className="w-4 h-4" />
-                            </Link>
-                        </div>
-                    ) : (
-                        <>
-                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                                {complaints.slice(0, 6).map((complaint) => (
-                                    <div
-                                        key={complaint.id}
-                                        className="group bg-white border border-slate-200/60 rounded-2xl overflow-hidden hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
-                                    >
-                                        <div className="p-6">
-                                            <div className="flex items-start justify-between mb-4">
-                                                <span className={`inline-flex items-center px-3 py-1.5 rounded-full text-xs font-bold border ${getStatusBadge(complaint.status)}`}>
-                                                    {complaint.status}
-                                                </span>
-                                                <span className="text-xs text-slate-500">
-                                                    {new Date(complaint.created_at).toLocaleDateString('en-US', {
-                                                        month: 'short',
-                                                        day: 'numeric',
-                                                        year: 'numeric'
-                                                    })}
-                                                </span>
-                                            </div>
-
-                                            <h3 className="text-lg font-bold text-slate-900 mb-2 line-clamp-2 group-hover:text-blue-600 transition-colors">
-                                                {complaint.title}
-                                            </h3>
-
-                                            <p className="text-sm text-slate-600 mb-4 line-clamp-2">
-                                                {complaint.description}
-                                            </p>
-
-                                            <div className="flex items-center justify-between pt-4 border-t border-slate-100">
-                                                <span className="inline-flex items-center text-xs font-semibold text-blue-600 bg-blue-50 px-3 py-1.5 rounded-lg">
-                                                    {complaint.category}
-                                                </span>
-                                                <span className="text-xs text-slate-400">
-                                                    ID #{complaint.id}
-                                                </span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
-
-                            {complaints.length > 6 && (
-                                <div className="text-center mt-8">
-                                    <Link
-                                        to="/my-complaints"
-                                        className="inline-flex items-center gap-2 px-8 py-4 rounded-xl text-blue-600 text-base font-bold bg-blue-50 border-2 border-blue-200 hover:bg-blue-100 hover:border-blue-300 hover:shadow-lg transition-all"
-                                    >
-                                        View All {complaints.length} Complaints
-                                        <ArrowRight className="w-5 h-5" />
-                                    </Link>
-                                </div>
-                            )}
-                        </>
-                    )}
-                </div>
-            </section>
-
-            {/* CTA Section */}
-            <section className="py-20 bg-gradient-to-br from-blue-900 via-blue-800 to-cyan-900 relative overflow-hidden">
-                <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1517090504586-fde19ea6066f?auto=format&fit=crop&w=2000&q=80')] bg-cover bg-center opacity-10"></div>
-
-                <div className="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-                    <h2 className="text-4xl sm:text-5xl font-black text-white mb-6">
-                        Ready to Make a Difference?
-                    </h2>
-                    <p className="text-xl text-blue-100 mb-10 max-w-2xl mx-auto">
-                        Join thousands of citizens working together to build better, safer, and cleaner communities
-                    </p>
-
-                    <Link
-                        to="/report"
-                        className="inline-flex items-center gap-2 px-10 py-5 rounded-xl text-blue-900 text-lg font-bold bg-gradient-to-r from-cyan-400 to-blue-400 shadow-2xl shadow-cyan-500/30 hover:shadow-cyan-500/50 hover:scale-105 transition-all"
-                    >
-                        Report Your First Issue
-                        <ArrowRight className="w-6 h-6" />
-                    </Link>
-                </div>
-            </section>
+          <div className="grid gap-4 sm:grid-cols-3 lg:grid-cols-1">
+            {steps.map((step, index) => (
+              <article key={step.title} className="rounded-[28px] border border-white/10 bg-white/6 p-6 text-white backdrop-blur-xl">
+                <p className="text-xs font-bold uppercase tracking-[0.22em] text-cyan-200">Step {index + 1}</p>
+                <h2 className="mt-4 text-2xl font-black tracking-tight">{step.title}</h2>
+                <p className="mt-3 text-sm leading-7 text-slate-300">{step.description}</p>
+              </article>
+            ))}
+          </div>
         </div>
-    );
+      </section>
+
+      <section className="py-20">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="mb-14 max-w-3xl">
+            <p className="text-sm font-bold uppercase tracking-[0.22em] text-sky-700">Initial architecture</p>
+            <h2 className="mt-3 text-4xl font-black tracking-tight text-slate-950 sm:text-5xl">
+              Similar flow, cleaner separation of concerns.
+            </h2>
+            <p className="mt-4 text-lg leading-8 text-slate-600">
+              The landing page is now purely for orientation and trust-building. Complaint management belongs to the
+              dashboard shell, just like the route-first structure in `acm2k26`.
+            </p>
+          </div>
+
+          <div className="grid gap-6 lg:grid-cols-3">
+            {featureCards.map((feature) => {
+              const Icon = feature.icon;
+              return (
+                <article key={feature.title} className="rounded-[30px] border border-slate-200 bg-white/85 p-8 shadow-lg shadow-slate-950/5">
+                  <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-sky-500 to-cyan-400 text-white shadow-lg shadow-sky-500/20">
+                    <Icon className="h-6 w-6" />
+                  </div>
+                  <h3 className="mt-6 text-2xl font-black tracking-tight text-slate-950">{feature.title}</h3>
+                  <p className="mt-3 text-sm leading-7 text-slate-600">{feature.description}</p>
+                </article>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+
+      <section className="pb-24">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="overflow-hidden rounded-[36px] bg-slate-950 text-white shadow-2xl shadow-slate-950/10">
+            <div className="grid gap-8 px-8 py-10 lg:grid-cols-[1fr_0.9fr] lg:px-10">
+              <div>
+                <p className="text-sm font-bold uppercase tracking-[0.22em] text-cyan-200">Why this matters</p>
+                <h2 className="mt-4 text-4xl font-black tracking-tight">Users no longer hit dashboard features too early.</h2>
+                <p className="mt-4 max-w-2xl text-base leading-8 text-slate-300">
+                  That makes the product feel more intentional: marketing pages explain value, sign-in establishes context,
+                  and `/home` becomes the singular place for reporting, complaint history, and admin handling.
+                </p>
+              </div>
+
+              <div className="rounded-[30px] border border-white/10 bg-white/5 p-7">
+                <div className="flex items-center gap-3">
+                  <LayoutDashboard className="h-6 w-6 text-cyan-300" />
+                  <h3 className="text-2xl font-black tracking-tight">Next stop: dashboard</h3>
+                </div>
+                <p className="mt-4 text-sm leading-7 text-slate-300">
+                  Continue into the sign-in screen and enter the citizen or admin workspace based on the role you want to test.
+                </p>
+                <Link
+                  to="/signin"
+                  className="mt-8 inline-flex items-center gap-2 rounded-full bg-white px-6 py-3 text-sm font-black text-slate-950 transition hover:bg-cyan-100"
+                >
+                  Open sign in
+                  <ArrowRight className="h-4 w-4" />
+                </Link>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  );
 }
