@@ -49,7 +49,7 @@ export default function AdminMapPage() {
     load();
   }, []);
 
-  const defaultCenter = [19.0760, 72.8777]; // Mumbai
+  const defaultCenter = [17.064068, 74.282535]; // N 17° 3' 50.645'' / E 74° 16' 57.127''
 
   return (
     <div className="space-y-6 h-[calc(100vh-120px)] flex flex-col">
