@@ -28,6 +28,7 @@ class Settings(BaseSettings):
     supabase_service_role_key: str | None = Field(default=None, alias="SUPABASE_SERVICE_ROLE_KEY")
     supabase_bucket: str = Field(default="issue-photos", alias="SUPABASE_BUCKET")
 
+
     cluster_geo_threshold_meters: float = Field(default=120.0, alias="CLUSTER_GEO_THRESHOLD_METERS")
     cluster_text_threshold: float = Field(default=0.45, alias="CLUSTER_TEXT_THRESHOLD")
 
