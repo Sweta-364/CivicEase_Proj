@@ -1,58 +1,46 @@
-import React from 'react';
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import PublicLayout from './layouts/PublicLayout';
 import DashboardLayout from './layouts/DashboardLayout';
 import Home from './pages/Home';
-import About from './pages/About';
-import Services from './pages/Services';
-import HowItWorks from './pages/HowItWorks';
-import FAQ from './pages/FAQ';
-import Contact from './pages/Contact';
-import Privacy from './pages/Privacy';
-import Terms from './pages/Terms';
 import SignIn from './pages/SignIn';
-import DashboardHome from './pages/DashboardHome';
-import ComplaintList from './components/ComplaintList';
-import CreateComplaint from './components/CreateComplaint';
-import AdminDashboard from './components/AdminDashboard';
-import { getSessionUser, isAdmin } from './lib/auth';
+import DashboardOverview from './pages/home/DashboardOverview';
+import IssuesNewPage from './pages/home/IssuesNewPage';
+import MyIssuesPage from './pages/home/MyIssuesPage';
+import IssueDetailPage from './pages/home/IssueDetailPage';
+import CommunityPage from './pages/home/CommunityPage';
+import CommunityPostPage from './pages/home/CommunityPostPage';
+import ResourcesPage from './pages/home/ResourcesPage';
+import AssistantPage from './pages/home/AssistantPage';
+import AdminIssuesPage from './pages/home/AdminIssuesPage';
+import AdminDepartmentsPage from './pages/home/AdminDepartmentsPage';
+import AdminClustersPage from './pages/home/AdminClustersPage';
+import AdminResourceCreatePage from './pages/home/AdminResourceCreatePage';
+import { useAuth } from './context/useAuth';
+import { canAccessAdminIssues, canCreateAdminResource, isMainAdmin } from './lib/auth';
 
-function AdminHomeRedirect() {
-  const user = getSessionUser();
-  return <Navigate to={isAdmin(user) ? '/home/admin' : '/home'} replace />;
+function RequireAuth({ children }) {
+  const { appUser, loading } = useAuth();
+  if (loading) return <div className="p-8 text-sm text-slate-500">Loading workspace...</div>;
+  if (!appUser) return <Navigate to="/signin" replace />;
+  return children;
 }
 
-function CitizenComplaintList() {
-  const user = getSessionUser();
-  if (!user) {
-    return <Navigate to="/signin" replace />;
-  }
-  if (isAdmin(user)) {
-    return <Navigate to="/home/admin" replace />;
-  }
-  return <ComplaintList userId={user.id} />;
+function RequireMainAdmin({ children }) {
+  const { appUser } = useAuth();
+  if (!isMainAdmin(appUser)) return <Navigate to="/home" replace />;
+  return children;
 }
 
-function CitizenCreateComplaint() {
-  const user = getSessionUser();
-  if (!user) {
-    return <Navigate to="/signin" replace />;
-  }
-  if (isAdmin(user)) {
-    return <Navigate to="/home/admin" replace />;
-  }
-  return <CreateComplaint />;
+function RequireAdminIssuesAccess({ children }) {
+  const { appUser } = useAuth();
+  if (!canAccessAdminIssues(appUser)) return <Navigate to="/home" replace />;
+  return children;
 }
 
-function ProtectedAdminRoute() {
-  const user = getSessionUser();
-  if (!user) {
-    return <Navigate to="/signin" replace />;
-  }
-  if (!isAdmin(user)) {
-    return <Navigate to="/home" replace />;
-  }
-  return <AdminDashboard />;
+function RequireAdminResourceAccess({ children }) {
+  const { appUser } = useAuth();
+  if (!canCreateAdminResource(appUser)) return <Navigate to="/home" replace />;
+  return children;
 }
 
 export default function App() {
@@ -61,23 +49,58 @@ export default function App() {
       <Routes>
         <Route element={<PublicLayout />}>
           <Route path="/" element={<Home />} />
-          <Route path="/about" element={<About />} />
-          <Route path="/services" element={<Services />} />
-          <Route path="/how-it-works" element={<HowItWorks />} />
-          <Route path="/faq" element={<FAQ />} />
-          <Route path="/contact" element={<Contact />} />
-          <Route path="/privacy" element={<Privacy />} />
-          <Route path="/terms" element={<Terms />} />
         </Route>
 
         <Route path="/signin" element={<SignIn />} />
 
-        <Route path="/home" element={<DashboardLayout />}>
-          <Route index element={<DashboardHome />} />
-          <Route path="overview" element={<AdminHomeRedirect />} />
-          <Route path="my-complaints" element={<CitizenComplaintList />} />
-          <Route path="report" element={<CitizenCreateComplaint />} />
-          <Route path="admin" element={<ProtectedAdminRoute />} />
+        <Route
+          path="/home"
+          element={
+            <RequireAuth>
+              <DashboardLayout />
+            </RequireAuth>
+          }
+        >
+          <Route index element={<DashboardOverview />} />
+          <Route path="issues/new" element={<IssuesNewPage />} />
+          <Route path="issues/me" element={<MyIssuesPage />} />
+          <Route path="issues/:issueId" element={<IssueDetailPage />} />
+          <Route path="community" element={<CommunityPage />} />
+          <Route path="community/:postId" element={<CommunityPostPage />} />
+          <Route path="resources" element={<ResourcesPage />} />
+          <Route path="assistant" element={<AssistantPage />} />
+          <Route
+            path="admin/issues"
+            element={
+              <RequireAdminIssuesAccess>
+                <AdminIssuesPage />
+              </RequireAdminIssuesAccess>
+            }
+          />
+          <Route
+            path="admin/departments"
+            element={
+              <RequireMainAdmin>
+                <AdminDepartmentsPage />
+              </RequireMainAdmin>
+            }
+          />
+          <Route
+            path="admin/clusters"
+            element={
+              <RequireMainAdmin>
+                <AdminClustersPage />
+              </RequireMainAdmin>
+            }
+          />
+          <Route
+            path="admin/resources/new"
+            element={
+              <RequireAdminResourceAccess>
+                <AdminResourceCreatePage />
+              </RequireAdminResourceAccess>
+            }
+          />
         </Route>
 
         <Route path="*" element={<Navigate to="/" replace />} />

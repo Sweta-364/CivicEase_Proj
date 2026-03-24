@@ -1,0 +1,79 @@
+import { useEffect, useState } from 'react';
+import api from '../../api';
+
+const static_card_style = 'rounded-xl bg-white p-6 shadow-sm ring-1 ring-black/5';
+
+export default function AdminDepartmentsPage() {
+  const [departments, setDepartments] = useState([]);
+  const [name, setName] = useState('');
+  const [description, setDescription] = useState('');
+
+  async function load() {
+    const response = await api.get('/v1/departments');
+    setDepartments(response.data ?? []);
+  }
+
+  useEffect(() => {
+    load().catch((error) => console.error(error));
+  }, []);
+
+  async function createDepartment(event) {
+    event.preventDefault();
+    await api.post('/v1/departments', { name, description });
+    setName('');
+    setDescription('');
+    await load();
+  }
+
+  async function toggleActive(department) {
+    await api.patch(`/v1/departments/${department.id}`, { is_active: !department.is_active });
+    await load();
+  }
+
+  return (
+    <div className="space-y-6">
+      <div>
+        <p className="text-xs font-semibold uppercase tracking-wider text-gray-500 mb-2">Administration</p>
+        <h1 className="text-2xl font-bold tracking-tight text-gray-900">Department Management</h1>
+      </div>
+
+      <form onSubmit={createDepartment} className={`${static_card_style} space-y-4`}>
+        <p className="text-xs font-semibold uppercase tracking-wider text-gray-500 mb-1">Create Department</p>
+        <input
+          className="w-full rounded-xl border border-gray-200 bg-gray-50 p-3 text-sm transition-colors focus:border-sky-300 focus:bg-white focus:outline-none focus:ring-2 focus:ring-sky-500/20"
+          placeholder="Department name"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          required
+        />
+        <textarea
+          className="h-24 w-full rounded-xl border border-gray-200 bg-gray-50 p-3 text-sm transition-colors focus:border-sky-300 focus:bg-white focus:outline-none focus:ring-2 focus:ring-sky-500/20"
+          placeholder="Department description"
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+          required
+        />
+        <button className="rounded-xl bg-gray-900 px-5 py-3 text-sm font-bold text-white transition-colors hover:bg-gray-800 active:scale-[0.98]">
+          Create Department
+        </button>
+      </form>
+
+      <div className="space-y-3">
+        {departments.map((department) => (
+          <div key={department.id} className={`${static_card_style} flex items-center justify-between`}>
+            <div>
+              <p className="text-sm font-bold text-gray-900">{department.name}</p>
+              <p className="mt-1 text-xs text-gray-500 leading-relaxed">{department.description}</p>
+            </div>
+            <button
+              onClick={() => toggleActive(department)}
+              className="shrink-0 rounded-xl bg-white ring-1 ring-gray-200 px-4 py-2.5 text-xs font-bold text-gray-700 transition-all duration-200 hover:bg-gray-50 hover:shadow-sm active:scale-[0.98]"
+            >
+              {department.is_active ? 'Deactivate' : 'Activate'}
+            </button>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}

@@ -1,14 +1,10 @@
 import React from 'react';
 import { Link, Outlet, useLocation } from 'react-router-dom';
-import { ArrowRight, Building2, CircleHelp, Info, Mail, ShieldCheck, Wrench } from 'lucide-react';
+import { ArrowRight, Building2, ShieldCheck } from 'lucide-react';
 
 const navigation = [
-  { name: 'Overview', href: '/', icon: Building2 },
-  { name: 'About', href: '/about', icon: Info },
-  { name: 'Services', href: '/services', icon: Wrench },
-  { name: 'How It Works', href: '/how-it-works', icon: CircleHelp },
-  { name: 'FAQ', href: '/faq', icon: CircleHelp },
-  { name: 'Contact', href: '/contact', icon: Mail },
+  { name: 'Overview', href: '/' },
+  { name: 'Sign In', href: '/signin' },
 ];
 
 function CivicEaseMark() {
@@ -95,9 +91,7 @@ export default function PublicLayout() {
           <div>
             <h3 className="mb-4 text-sm font-bold uppercase tracking-[0.2em] text-slate-500">Platform</h3>
             <div className="space-y-3 text-sm">
-              <Link to="/about" className="block transition hover:text-white">About</Link>
-              <Link to="/services" className="block transition hover:text-white">Services</Link>
-              <Link to="/how-it-works" className="block transition hover:text-white">How it works</Link>
+              <Link to="/" className="block transition hover:text-white">Overview</Link>
               <Link to="/signin" className="block transition hover:text-white">Sign in</Link>
             </div>
           </div>
@@ -105,9 +99,9 @@ export default function PublicLayout() {
           <div>
             <h3 className="mb-4 text-sm font-bold uppercase tracking-[0.2em] text-slate-500">Legal</h3>
             <div className="space-y-3 text-sm">
-              <Link to="/privacy" className="block transition hover:text-white">Privacy Policy</Link>
-              <Link to="/terms" className="block transition hover:text-white">Terms of Service</Link>
-              <Link to="/contact" className="block transition hover:text-white">Contact</Link>
+              <span className="block text-slate-400">Privacy Policy</span>
+              <span className="block text-slate-400">Terms of Service</span>
+              <span className="block text-slate-400">Contact</span>
             </div>
           </div>
         </div>

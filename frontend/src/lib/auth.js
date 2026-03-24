@@ -1,92 +1,37 @@
-import { auth, firebaseSignOut } from '../firebaseConfig';
+export const ROLE_MAIN_ADMIN = 'org_main_admin';
+export const ROLE_DEPARTMENT_ADMIN = 'department_admin';
+export const ROLE_REPORTER = 'reporter';
 
-const STORAGE_KEY = 'civicease_session';
-
-const ADMIN_DEMO_SESSION = {
-  id: 'admin-demo',
-  email: 'admin@demo.com',
-  role: 'admin',
-  name: 'Priya Admin',
-  first_name: 'Priya',
-};
-
-export function firstNameFromName(name = '', email = '') {
-  const trimmed = name.trim();
-  if (trimmed) {
-    return trimmed.split(/\s+/)[0];
-  }
-
-  if (email) {
-    return email.split('@')[0];
-  }
-
-  return 'User';
+export function getUserRoles(user) {
+  return user?.roles ?? [];
 }
 
-export function getSessionUser() {
-  if (typeof window === 'undefined') {
-    return null;
-  }
-
-  const raw = window.localStorage.getItem(STORAGE_KEY);
-  if (!raw) {
-    return null;
-  }
-
-  try {
-    return JSON.parse(raw);
-  } catch {
-    window.localStorage.removeItem(STORAGE_KEY);
-    return null;
-  }
+export function hasRole(user, role) {
+  return getUserRoles(user).some((entry) => entry.role === role);
 }
 
-export function saveSessionUser(session) {
-  if (typeof window === 'undefined') {
-    return session;
-  }
-
-  window.localStorage.setItem(STORAGE_KEY, JSON.stringify(session));
-  return session;
+export function isMainAdmin(user) {
+  return hasRole(user, ROLE_MAIN_ADMIN);
 }
 
-export function syncFirebaseUserToSession(user) {
-  if (!user) {
-    return null;
-  }
-
-  return saveSessionUser({
-    id: user.uid,
-    email: user.email || '',
-    name: user.displayName || firstNameFromName('', user.email || ''),
-    first_name: firstNameFromName(user.displayName || '', user.email || ''),
-    role: 'citizen',
-    photoURL: user.photoURL || '',
-  });
+export function isDepartmentAdmin(user) {
+  return hasRole(user, ROLE_DEPARTMENT_ADMIN);
 }
 
-export function signInAsAdminDemo() {
-  return saveSessionUser(ADMIN_DEMO_SESSION);
+export function isReporter(user) {
+  return hasRole(user, ROLE_REPORTER);
 }
 
-export function clearSessionUser() {
-  if (typeof window !== 'undefined') {
-    window.localStorage.removeItem(STORAGE_KEY);
-  }
+export function canAccessAdminIssues(user) {
+  return isMainAdmin(user) || isDepartmentAdmin(user);
 }
 
-export async function signOutUser() {
-  const session = getSessionUser();
-
-  try {
-    if (session?.role !== 'admin' && auth.currentUser) {
-      await firebaseSignOut(auth);
-    }
-  } finally {
-    clearSessionUser();
-  }
+export function canCreateAdminResource(user) {
+  return isMainAdmin(user) || isDepartmentAdmin(user);
 }
 
-export function isAdmin(user) {
-  return user?.role === 'admin';
+export function getDepartmentAdminIds(user) {
+  return getUserRoles(user)
+    .filter((entry) => entry.role === ROLE_DEPARTMENT_ADMIN && entry.department_id != null)
+    .map((entry) => entry.department_id);
 }

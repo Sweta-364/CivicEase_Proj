@@ -56,10 +56,10 @@ export default function Home() {
                 <ArrowRight className="h-5 w-5" />
               </Link>
               <Link
-                to="/how-it-works"
+                to="/signin"
                 className="inline-flex items-center justify-center gap-2 rounded-full border border-white/15 bg-white/5 px-8 py-4 text-base font-semibold text-white transition hover:bg-white/10"
               >
-                See the new flow
+                Open sign in
               </Link>
             </div>
           </div>
@@ -114,8 +114,8 @@ export default function Home() {
                 <p className="text-sm font-bold uppercase tracking-[0.22em] text-cyan-200">Why this matters</p>
                 <h2 className="mt-4 text-4xl font-black tracking-tight">Users no longer hit dashboard features too early.</h2>
                 <p className="mt-4 max-w-2xl text-base leading-8 text-slate-300">
-                  That makes the product feel more intentional: marketing pages explain value, sign-in establishes context,
-                  and `/home` becomes the singular place for reporting, complaint history, and admin handling.
+                  The app now uses a clear split: landing at `/`, authentication at `/signin`, and all product features
+                  inside `/home/*` with backend-enforced roles.
                 </p>
               </div>
 

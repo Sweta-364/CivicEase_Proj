@@ -10,23 +10,11 @@ export default defineConfig({
   ],
   server: {
     proxy: {
-      '/complaints': {
-        target: 'http://localhost:8000',
-        changeOrigin: true,
-      },
-      '/upload': {
-        target: 'http://localhost:8000',
-        changeOrigin: true,
-      },
-      '/users': {
+      '/v1': {
         target: 'http://localhost:8000',
         changeOrigin: true,
       },
       '/health': {
-        target: 'http://localhost:8000',
-        changeOrigin: true,
-      },
-      '/uploads': {
         target: 'http://localhost:8000',
         changeOrigin: true,
       },
