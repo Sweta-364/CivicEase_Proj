@@ -1,6 +1,7 @@
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import PublicLayout from './layouts/PublicLayout';
 import DashboardLayout from './layouts/DashboardLayout';
+import AdminLayout from './layouts/AdminLayout';
 import Home from './pages/Home';
 import SignIn from './pages/SignIn';
 import DashboardOverview from './pages/home/DashboardOverview';
@@ -69,8 +70,19 @@ export default function App() {
           <Route path="community/:postId" element={<CommunityPostPage />} />
           <Route path="resources" element={<ResourcesPage />} />
           <Route path="assistant" element={<AssistantPage />} />
+        </Route>
+
+        <Route
+          path="/admin"
+          element={
+            <RequireAuth>
+              <AdminLayout />
+            </RequireAuth>
+          }
+        >
+          <Route index element={<Navigate to="issues" replace />} />
           <Route
-            path="admin/issues"
+            path="issues"
             element={
               <RequireAdminIssuesAccess>
                 <AdminIssuesPage />
@@ -78,7 +90,7 @@ export default function App() {
             }
           />
           <Route
-            path="admin/departments"
+            path="departments"
             element={
               <RequireMainAdmin>
                 <AdminDepartmentsPage />
@@ -86,7 +98,7 @@ export default function App() {
             }
           />
           <Route
-            path="admin/clusters"
+            path="clusters"
             element={
               <RequireMainAdmin>
                 <AdminClustersPage />
@@ -94,7 +106,7 @@ export default function App() {
             }
           />
           <Route
-            path="admin/resources/new"
+            path="resources/new"
             element={
               <RequireAdminResourceAccess>
                 <AdminResourceCreatePage />

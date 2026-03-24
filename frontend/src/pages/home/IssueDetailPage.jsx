@@ -29,8 +29,8 @@ export default function IssueDetailPage() {
   return (
     <div className="space-y-6">
       <div>
-        <p className="text-xs font-semibold uppercase tracking-wider text-gray-500 mb-2">Issue Detail</p>
-        <h1 className="text-2xl font-bold tracking-tight text-gray-900">Issue #{issue.id}</h1>
+        <p className="text-xs font-semibold uppercase tracking-wider text-gray-500 mb-2">Issue #{issue.id}</p>
+        <h1 className="text-2xl font-bold tracking-tight text-gray-900">{issue.title || 'Untitled Issue'}</h1>
       </div>
 
       <div className={static_card_style}>

@@ -60,8 +60,11 @@ export default function AdminIssuesPage() {
                   : 'bg-gray-50 ring-1 ring-gray-100 hover:bg-gray-100'
               }`}
             >
-              <p className="font-bold text-gray-900">#{issue.id}</p>
-              <p className="line-clamp-2 text-xs text-gray-600 mt-1 leading-relaxed">{issue.description}</p>
+              <div className="flex items-center justify-between mb-1">
+                <p className="font-bold text-gray-900 line-clamp-1">{issue.title || `Issue #${issue.id}`}</p>
+                <span className="text-xs text-gray-500 shrink-0 ml-2">#{issue.id}</span>
+              </div>
+              <p className="line-clamp-2 text-xs text-gray-600 leading-relaxed">{issue.description}</p>
             </button>
           ))}
         </div>
