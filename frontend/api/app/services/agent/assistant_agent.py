@@ -8,7 +8,7 @@ from sqlalchemy.orm import Session
 
 from app.models.department import Department
 from app.models.enums import UserRoleEnum
-from app.models.issue import Issue
+from app.models.issue import Issue, IssueCluster
 from app.models.user import User
 from app.services.ai.cerebras_client import CerebrasClient
 from app.services.community_service import CommunityService
@@ -97,13 +97,17 @@ class AssistantAgent:
             "You are a civic platform assistant. Choose exactly one tool and return strict JSON with keys: "
             "tool, args, answer. If no tool is needed, tool must be null and provide answer. "
             "Available tools: list_resources, create_post, list_posts, create_comment, "
-            "vote_post, vote_comment, create_issue, my_issues, create_resource, list_departments."
+            "vote_post, vote_comment, create_issue, my_issues, create_resource, list_departments, "
+            "get_issue_details, list_clusters, list_all_issues."
         )
         user_prompt = (
             f"User message: {message}\n"
             "For create_post use args {title, body, image_keys?}. "
             "For create_issue use {description, lat, lng, photo_key?}. "
-            "For create_resource use {title, link_url, thumbnail_url?, department_id?}."
+            "For create_resource use {title, link_url, thumbnail_url?, department_id?}. "
+            "For get_issue_details use {issue_id}. "
+            "For list_all_issues use {status_filter?}. "
+            "For list_clusters use {}."
         )
 
         try:
@@ -162,6 +166,16 @@ class AssistantAgent:
                 args["department_id"] = int(resource_match.group(3))
             return {"tool": "create_resource", "args": args}
 
+        if "list clusters" in text or "show clusters" in text:
+            return {"tool": "list_clusters", "args": {}}
+
+        if "list all issues" in text or "show all issues" in text:
+            return {"tool": "list_all_issues", "args": {}}
+
+        issue_details_match = re.search(r"(?:get|show) issue\s+(?:details\s+)?(?:for\s+)?(\d+)", message, re.IGNORECASE)
+        if issue_details_match:
+            return {"tool": "get_issue_details", "args": {"issue_id": int(issue_details_match.group(1))}}
+
         return {
             "tool": None,
             "answer": (
@@ -195,6 +209,12 @@ class AssistantAgent:
             return self._tool_create_resource(args)
         if tool == "list_departments":
             return self._tool_list_departments()
+        if tool == "get_issue_details":
+            return self._tool_get_issue_details(args)
+        if tool == "list_clusters":
+            return self._tool_list_clusters()
+        if tool == "list_all_issues":
+            return self._tool_list_all_issues(args)
         raise ValueError(f"Unknown tool: {tool}")
 
     def _tool_list_resources(self, args: dict[str, Any]) -> list[dict[str, Any]]:
@@ -301,3 +321,31 @@ class AssistantAgent:
     def _tool_list_departments(self) -> list[dict[str, Any]]:
         rows = self.db.scalars(select(Department).where(Department.is_active.is_(True)).order_by(Department.name.asc())).all()
         return [{"id": d.id, "name": d.name, "description": d.description} for d in rows]
+
+    def _tool_get_issue_details(self, args: dict[str, Any]) -> dict[str, Any]:
+        issue_id = args.get("issue_id")
+        issue = self.db.get(Issue, issue_id)
+        if not issue:
+            return {"error": f"Issue {issue_id} not found"}
+        return {
+            "id": issue.id,
+            "title": issue.title,
+            "description": issue.description,
+            "status": issue.status,
+            "priority_level": issue.priority_level,
+            "department_id": issue.department_id,
+            "cluster_id": issue.cluster_id,
+            "created_at": issue.created_at.isoformat(),
+        }
+
+    def _tool_list_clusters(self) -> list[dict[str, Any]]:
+        rows = self.db.scalars(select(IssueCluster).order_by(IssueCluster.severity_score.desc())).all()
+        return [{"id": c.id, "theme_summary": c.theme_summary, "severity_score": c.severity_score, "issue_count": c.issue_count} for c in rows[:15]]
+
+    def _tool_list_all_issues(self, args: dict[str, Any]) -> list[dict[str, Any]]:
+        stmt = select(Issue).order_by(Issue.created_at.desc())
+        if "status_filter" in args and args["status_filter"]:
+            stmt = stmt.where(Issue.status == args["status_filter"])
+        
+        rows = self.db.scalars(stmt).all()
+        return [{"id": i.id, "title": i.title, "status": i.status, "cluster_id": i.cluster_id} for i in rows[:20]]
