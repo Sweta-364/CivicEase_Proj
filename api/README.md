@@ -1,0 +1,59 @@
+# CivicEase Backend (Single Municipality)
+
+FastAPI backend for municipal complaint resolution:
+- Firebase-authenticated users create civic issues with description + GPS + optional photo key.
+- AI routes issues to a department (description-only), assigns priority (P0-P3), and clusters duplicates (geo + text).
+- Main admin manages departments and department admins.
+- Department admins process issue statuses.
+- Community module supports posts, comments, and votes.
+- Resources module supports admin-published links with title/thumbnail.
+- Agent module provides tool-driven assistant actions.
+
+## Quick Start
+
+1. Create and activate a Python 3.11+ virtual environment.
+2. Install dependencies:
+   ```bash
+   pip install -r requirements.txt
+   ```
+3. Create `.env` from `.env.example` and set real values.
+4. Start API:
+   ```bash
+   uvicorn app.main:app --reload
+   ```
+
+## Database Behavior
+
+- Tables are auto-created at startup using SQLAlchemy `Base.metadata.create_all()`.
+- This only creates missing tables.
+- It does not apply schema migrations for changed columns/types. For schema changes, run manual SQL updates.
+
+## API Summary
+
+- Reporter:
+  - `POST /v1/issues`
+  - `GET /v1/issues/{issue_id}`
+  - `GET /v1/issues/me`
+- Main admin:
+  - `POST/GET/PATCH /v1/departments`
+  - `POST/GET /v1/departments/{department_id}/admins`
+  - `GET /v1/issues`
+  - `GET /v1/clusters`
+- Department admin:
+  - `GET /v1/departments/{department_id}/issues`
+  - `PATCH /v1/issues/{issue_id}/status`
+- Community:
+  - `POST /v1/community/posts`
+  - `GET /v1/community/posts`
+  - `POST /v1/community/posts/{post_id}/vote`
+  - `POST /v1/community/posts/{post_id}/comments`
+  - `POST /v1/community/comments/{comment_id}/vote`
+- Resources:
+  - `POST /v1/resources`
+  - `GET /v1/resources`
+  - `GET /v1/resources/{resource_id}`
+- Agent:
+  - `POST /v1/agent/chat`
+
+All protected routes require:
+`Authorization: Bearer <firebase_id_token>`
