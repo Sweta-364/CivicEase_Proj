@@ -19,7 +19,12 @@ def _firebase_env_credentials() -> dict[str, Any] | None:
     if not all(required):
         return None
 
+    # Vercel and other environments handle newlines in env vars inconsistently.
+    # This ensures that actual newline characters (\n) are preserved in the RSA key.
     private_key = settings.firebase_private_key.replace("\\n", "\n")
+    if not private_key.startswith("-----BEGIN"):
+       # Sometimes quotes or rogue characters sneak into the raw string
+       private_key = private_key.strip('"\'')
 
     return {
         "type": "service_account",
