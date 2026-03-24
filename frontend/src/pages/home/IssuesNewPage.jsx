@@ -38,12 +38,17 @@ export default function IssuesNewPage() {
       if (photo) {
         setMessage('Uploading photo evidence...');
         const uploadMeta = await api.post('/v1/issues/images/upload-url', { file_name: photo.name });
-        if (uploadMeta.data.signed_upload_url) {
-          await axios.put(uploadMeta.data.signed_upload_url, photo, { headers: { 'Content-Type': photo.type || 'application/octet-stream' } });
-          photoKey = uploadMeta.data.photo_key;
-        } else {
-           // Proceed without image if signed URL fails, but warn.
+        if (!uploadMeta.data.signed_upload_url) {
+          throw new Error('Failed to prepare image upload. Please try again.');
         }
+        try {
+          await axios.put(uploadMeta.data.signed_upload_url, photo, {
+            headers: { 'Content-Type': photo.type || 'application/octet-stream' },
+          });
+        } catch (uploadError) {
+          throw new Error('Photo upload failed. Please try again.');
+        }
+        photoKey = uploadMeta.data.photo_key;
       }
 
       setMessage('Submitting report...');
