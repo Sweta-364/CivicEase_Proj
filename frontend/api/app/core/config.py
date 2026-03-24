@@ -31,7 +31,7 @@ class Settings(BaseSettings):
     cluster_geo_threshold_meters: float = Field(default=120.0, alias="CLUSTER_GEO_THRESHOLD_METERS")
     cluster_text_threshold: float = Field(default=0.45, alias="CLUSTER_TEXT_THRESHOLD")
 
-    model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8", extra="ignore")
+    model_config = SettingsConfigDict(env_file=["../.env", ".env"], env_file_encoding="utf-8", extra="ignore")
 
 
 settings = Settings()
