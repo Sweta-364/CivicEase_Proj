@@ -17,6 +17,7 @@ import AdminDepartmentsPage from './pages/home/AdminDepartmentsPage';
 import AdminDepartmentPanelPage from './pages/home/AdminDepartmentPanelPage';
 import AdminClustersPage from './pages/home/AdminClustersPage';
 import AdminResourceCreatePage from './pages/home/AdminResourceCreatePage';
+import AdminMapPage from './pages/home/AdminMapPage';
 import { useAuth } from './context/useAuth';
 import { canAccessAdminIssues, canCreateAdminResource, isMainAdmin } from './lib/auth';
 
@@ -82,6 +83,14 @@ export default function App() {
           }
         >
           <Route index element={<Navigate to="issues" replace />} />
+          <Route
+            path="map"
+            element={
+              <RequireAdminIssuesAccess>
+                <AdminMapPage />
+              </RequireAdminIssuesAccess>
+            }
+          />
           <Route
             path="issues"
             element={

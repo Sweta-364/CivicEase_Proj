@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import api from '../../api';
 import { useAuth } from '../../context/useAuth';
 import { getDepartmentAdminIds, isMainAdmin } from '../../lib/auth';
+import { Link } from 'react-router-dom';
 
 const static_card_style = 'rounded-xl bg-white p-6 shadow-sm ring-1 ring-black/5';
 
@@ -15,6 +16,8 @@ export default function AdminIssuesPage() {
   const [issues, setIssues] = useState([]);
   const [selectedId, setSelectedId] = useState(null);
   const [note, setNote] = useState('');
+
+  const selectedIssue = issues.find((i) => i.id === selectedId);
 
   async function load() {
     if (isMainAdmin(appUser)) {
@@ -42,9 +45,17 @@ export default function AdminIssuesPage() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <p className="text-xs font-semibold uppercase tracking-wider text-gray-500 mb-2">Administration</p>
-        <h1 className="text-2xl font-bold tracking-tight text-gray-900">Issue Queue</h1>
+      <div className="flex items-center justify-between">
+        <div>
+          <p className="text-xs font-semibold uppercase tracking-wider text-gray-500 mb-2">Administration</p>
+          <h1 className="text-2xl font-bold tracking-tight text-gray-900">Issue Queue</h1>
+        </div>
+        <Link 
+          to="/admin/map" 
+          className="rounded-xl bg-gray-900 px-4 py-2 text-sm font-bold text-white hover:bg-gray-800 transition-colors shadow-sm"
+        >
+          View on Map
+        </Link>
       </div>
 
       <div className="grid gap-6 lg:grid-cols-[340px_1fr]">
@@ -71,11 +82,45 @@ export default function AdminIssuesPage() {
 
         <div className={static_card_style}>
           {!selectedId && <p className="text-sm text-gray-500">Select an issue to update status.</p>}
-          {selectedId && (
-            <div className="space-y-4">
-              <p className="text-xs font-semibold uppercase tracking-wider text-gray-500">
-                Updating Issue <span className="text-gray-900 font-bold">#{selectedId}</span>
-              </p>
+          {selectedId && selectedIssue && (
+            <div className="space-y-6">
+              <div className="space-y-4">
+                <div>
+                  <h2 className="text-xl font-bold text-gray-900">{selectedIssue.title || `Issue #${selectedIssue.id}`}</h2>
+                  <div className="mt-2 flex flex-wrap gap-2 text-xs">
+                    <span className="rounded-full bg-blue-50 px-2.5 py-1 font-semibold text-blue-700 ring-1 ring-blue-600/20">
+                      Status: {selectedIssue.status}
+                    </span>
+                    <span className="rounded-full bg-orange-50 px-2.5 py-1 font-semibold text-orange-700 ring-1 ring-orange-600/20">
+                      Priority: {selectedIssue.priority_level}
+                    </span>
+                    {selectedIssue.department_name && (
+                      <span className="rounded-full bg-purple-50 px-2.5 py-1 font-semibold text-purple-700 ring-1 ring-purple-600/20">
+                        Dept: {selectedIssue.department_name}
+                      </span>
+                    )}
+                  </div>
+                </div>
+
+                <p className="text-sm text-gray-700 leading-relaxed bg-gray-50 p-3 rounded-lg ring-1 ring-gray-200">
+                  {selectedIssue.description}
+                </p>
+
+                {selectedIssue.photo_urls?.length > 0 && (
+                  <div className="grid gap-3 grid-cols-2">
+                    {selectedIssue.photo_urls.map((url) => (
+                      <img key={url} src={url} alt="Issue evidence" className="w-full h-32 object-cover rounded-xl ring-1 ring-black/5 shadow-sm" />
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              <div className="h-px bg-gray-100" />
+
+              <div className="space-y-4">
+                <p className="text-xs font-semibold uppercase tracking-wider text-gray-500">
+                  Update Status for <span className="text-gray-900 font-bold">#{selectedId}</span>
+                </p>
               <textarea
                 className="h-24 w-full rounded-xl border border-gray-200 bg-gray-50 p-4 text-sm transition-colors focus:border-sky-300 focus:bg-white focus:outline-none focus:ring-2 focus:ring-sky-500/20"
                 placeholder="Optional note"
@@ -93,6 +138,7 @@ export default function AdminIssuesPage() {
                   </button>
                 ))}
               </div>
+            </div>
             </div>
           )}
         </div>
