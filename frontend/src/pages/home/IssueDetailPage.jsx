@@ -4,6 +4,18 @@ import api from '../../api';
 
 const static_card_style = 'rounded-xl bg-white p-6 shadow-sm ring-1 ring-black/5';
 
+function formatDepartmentLabel(issue) {
+  if (issue.department_id == null) return 'Unassigned';
+  if (issue.department_name) return `${issue.department_name} (#${issue.department_id})`;
+  return `Unknown Department (#${issue.department_id})`;
+}
+
+function formatAssigneeLabel(issue) {
+  if (issue.assigned_person_name) return issue.assigned_person_name;
+  if (issue.assigned_person_id != null) return `Unknown Person (#${issue.assigned_person_id})`;
+  return 'Not assigned';
+}
+
 export default function IssueDetailPage() {
   const { issueId } = useParams();
   const [issue, setIssue] = useState(null);
@@ -41,6 +53,12 @@ export default function IssueDetailPage() {
           </span>
           <span className="rounded-full bg-gray-100 px-3 py-1.5 text-xs font-semibold uppercase tracking-wider text-gray-600">
             Priority: {issue.priority_level}
+          </span>
+          <span className="rounded-full bg-gray-100 px-3 py-1.5 text-xs font-semibold uppercase tracking-wider text-gray-600">
+            Department: {formatDepartmentLabel(issue)}
+          </span>
+          <span className="rounded-full bg-gray-100 px-3 py-1.5 text-xs font-semibold uppercase tracking-wider text-gray-600">
+            Assigned Person: {formatAssigneeLabel(issue)}
           </span>
           <span className="rounded-full bg-gray-100 px-3 py-1.5 text-xs font-semibold uppercase tracking-wider text-gray-600">
             Location: {issue.latitude}, {issue.longitude}

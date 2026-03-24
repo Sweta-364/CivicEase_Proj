@@ -14,6 +14,7 @@ import ResourcesPage from './pages/home/ResourcesPage';
 import AssistantPage from './pages/home/AssistantPage';
 import AdminIssuesPage from './pages/home/AdminIssuesPage';
 import AdminDepartmentsPage from './pages/home/AdminDepartmentsPage';
+import AdminDepartmentPanelPage from './pages/home/AdminDepartmentPanelPage';
 import AdminClustersPage from './pages/home/AdminClustersPage';
 import AdminResourceCreatePage from './pages/home/AdminResourceCreatePage';
 import { useAuth } from './context/useAuth';
@@ -95,6 +96,14 @@ export default function App() {
               <RequireMainAdmin>
                 <AdminDepartmentsPage />
               </RequireMainAdmin>
+            }
+          />
+          <Route
+            path="departments/:departmentId"
+            element={
+              <RequireAdminIssuesAccess>
+                <AdminDepartmentPanelPage />
+              </RequireAdminIssuesAccess>
             }
           />
           <Route

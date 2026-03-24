@@ -17,6 +17,18 @@ function statusBadge(status) {
   );
 }
 
+function formatDepartmentLabel(issue) {
+  if (issue.department_id == null) return 'Unassigned';
+  if (issue.department_name) return `${issue.department_name} (#${issue.department_id})`;
+  return `Unknown Department (#${issue.department_id})`;
+}
+
+function formatAssigneeLabel(issue) {
+  if (issue.assigned_person_name) return issue.assigned_person_name;
+  if (issue.assigned_person_id != null) return `Unknown Person (#${issue.assigned_person_id})`;
+  return 'Not assigned';
+}
+
 export default function MyIssuesPage() {
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -61,16 +73,19 @@ export default function MyIssuesPage() {
               <p className="text-sm font-bold text-gray-900 line-clamp-2">{issue.title || `Issue #${issue.id}`}</p>
               {statusBadge(issue.status)}
             </div>
-            
+
             {issue.photo_urls?.length > 0 && (
               <div className="mt-3 overflow-hidden rounded-lg bg-gray-100 max-h-48 relative ring-1 ring-black/5">
                 <img src={issue.photo_urls[0]} alt="Issue thumbnail" className="w-full object-cover" />
               </div>
             )}
-            
+
             <p className="mt-3 text-sm text-gray-600 line-clamp-2">{issue.description}</p>
             <p className="mt-3 text-xs font-medium uppercase tracking-wider text-gray-400">
-              Priority: {issue.priority_level?.toUpperCase()} · Department: {issue.department_id ?? 'Unassigned'}
+              Priority: {issue.priority_level?.toUpperCase()} | Department: {formatDepartmentLabel(issue)}
+            </p>
+            <p className="mt-1 text-xs font-medium uppercase tracking-wider text-gray-400">
+              Assigned Person: {formatAssigneeLabel(issue)}
             </p>
           </Link>
         ))}

@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import api from '../../api';
 
 const static_card_style = 'rounded-xl bg-white p-6 shadow-sm ring-1 ring-black/5';
@@ -7,6 +8,7 @@ export default function AdminDepartmentsPage() {
   const [departments, setDepartments] = useState([]);
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
+  const [actionError, setActionError] = useState('');
 
   async function load() {
     const response = await api.get('/v1/departments');
@@ -19,6 +21,7 @@ export default function AdminDepartmentsPage() {
 
   async function createDepartment(event) {
     event.preventDefault();
+    setActionError('');
     await api.post('/v1/departments', { name, description });
     setName('');
     setDescription('');
@@ -26,8 +29,22 @@ export default function AdminDepartmentsPage() {
   }
 
   async function toggleActive(department) {
+    setActionError('');
     await api.patch(`/v1/departments/${department.id}`, { is_active: !department.is_active });
     await load();
+  }
+
+  async function deleteDepartment(department) {
+    const confirmed = window.confirm(`Delete "${department.name}" permanently?`);
+    if (!confirmed) return;
+    setActionError('');
+    try {
+      await api.delete(`/v1/departments/${department.id}`);
+      await load();
+    } catch (error) {
+      const detail = error?.response?.data?.detail || 'Failed to delete department.';
+      setActionError(detail);
+    }
   }
 
   return (
@@ -59,18 +76,37 @@ export default function AdminDepartmentsPage() {
       </form>
 
       <div className="space-y-3">
+        {actionError && (
+          <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+            {actionError}
+          </div>
+        )}
         {departments.map((department) => (
           <div key={department.id} className={`${static_card_style} flex items-center justify-between`}>
             <div>
               <p className="text-sm font-bold text-gray-900">{department.name}</p>
               <p className="mt-1 text-xs text-gray-500 leading-relaxed">{department.description}</p>
             </div>
-            <button
-              onClick={() => toggleActive(department)}
-              className="shrink-0 rounded-xl bg-white ring-1 ring-gray-200 px-4 py-2.5 text-xs font-bold text-gray-700 transition-all duration-200 hover:bg-gray-50 hover:shadow-sm active:scale-[0.98]"
-            >
-              {department.is_active ? 'Deactivate' : 'Activate'}
-            </button>
+            <div className="flex items-center gap-2">
+              <Link
+                to={`/admin/departments/${department.id}`}
+                className="shrink-0 rounded-xl bg-sky-600 px-4 py-2.5 text-xs font-bold text-white transition-all duration-200 hover:bg-sky-500 active:scale-[0.98]"
+              >
+                Open Panel
+              </Link>
+              <button
+                onClick={() => toggleActive(department)}
+                className="shrink-0 rounded-xl bg-white ring-1 ring-gray-200 px-4 py-2.5 text-xs font-bold text-gray-700 transition-all duration-200 hover:bg-gray-50 hover:shadow-sm active:scale-[0.98]"
+              >
+                {department.is_active ? 'Deactivate' : 'Activate'}
+              </button>
+              <button
+                onClick={() => deleteDepartment(department)}
+                className="shrink-0 rounded-xl bg-red-600 px-4 py-2.5 text-xs font-bold text-white transition-all duration-200 hover:bg-red-500 active:scale-[0.98]"
+              >
+                Delete
+              </button>
+            </div>
           </div>
         ))}
       </div>
