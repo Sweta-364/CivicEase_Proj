@@ -1,1 +1,0 @@
-"""CivicEase backend package."""
