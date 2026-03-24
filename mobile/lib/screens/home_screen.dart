@@ -25,17 +25,17 @@ class _HomeScreenState extends State<HomeScreen> {
   final List<Map<String, String>> _slides = [
     {
       'url':
-          'https://images.unsplash.com/photo-1449824913935-59a10b8d2000?auto=format&fit=crop&w=1000&q=80',
+          'https://images.unsplash.com/photo-1449824913935-59a10b8d2000?fm=jpg&fit=crop&w=1000&q=80',
       'tagline': 'Empowering Communities, One Report at a Time.'
     },
     {
       'url':
-          'https://images.unsplash.com/photo-1517090504586-fde19ea6066f?auto=format&fit=crop&w=1000&q=80',
+          'https://images.unsplash.com/photo-1517090504586-fde19ea6066f?fm=jpg&fit=crop&w=1000&q=80',
       'tagline': 'Better Neighborhoods Through Faster Response.'
     },
     {
       'url':
-          'https://images.unsplash.com/photo-1444723121867-7a241cacace9?auto=format&fit=crop&w=1000&q=80',
+          'https://images.unsplash.com/photo-1444723121867-7a241cacace9?fm=jpg&fit=crop&w=1000&q=80',
       'tagline': 'Your Voice for a Better City Environment.'
     }
   ];
