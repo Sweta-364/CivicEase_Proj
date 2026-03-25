@@ -4,6 +4,13 @@ import api from '../../api';
 
 const static_card_style = 'rounded-xl bg-white p-6 shadow-sm ring-1 ring-black/5';
 
+function formatTimestamp(value) {
+  if (!value) return 'Pending';
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return 'Pending';
+  return date.toLocaleString();
+}
+
 function formatDepartmentLabel(issue) {
   if (issue.department_id == null) return 'Unassigned';
   if (issue.department_name) return `${issue.department_name} (#${issue.department_id})`;
@@ -82,6 +89,25 @@ export default function IssueDetailPage() {
               <li key={key} className="rounded-lg bg-gray-50 px-3 py-2 text-sm text-gray-600 ring-1 ring-gray-200">{key}</li>
             ))}
           </ul>
+        </div>
+      )}
+
+      {issue.resolution_photo_url && (
+        <div className={static_card_style}>
+          <p className="text-xs font-semibold uppercase tracking-wider text-gray-500 mb-3">Resolution Proof</p>
+          <img
+            src={issue.resolution_photo_url}
+            alt="Resolution proof"
+            className="w-full rounded-2xl object-cover ring-1 ring-black/5 shadow-sm"
+          />
+          {issue.resolution_note && (
+            <div className="mt-4 rounded-xl bg-gray-50 px-4 py-3 text-sm text-gray-700 ring-1 ring-gray-100">
+              {issue.resolution_note}
+            </div>
+          )}
+          <p className="mt-4 text-xs font-semibold uppercase tracking-wider text-gray-500">
+            Resolved At: {formatTimestamp(issue.resolved_at)}
+          </p>
         </div>
       )}
     </div>

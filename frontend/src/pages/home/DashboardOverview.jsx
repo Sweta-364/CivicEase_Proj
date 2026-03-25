@@ -1,35 +1,41 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowRight, ClipboardList, FilePlus2, LibraryBig, MessageSquare, Bot } from 'lucide-react';
+import { ArrowRight, ClipboardList, FilePlus2, LibraryBig, MessageSquare, Bot, MessagesSquare, Wrench } from 'lucide-react';
 import api from '../../api';
 import { useAuth } from '../../context/useAuth';
-import { canAccessAdminIssues, isMainAdmin } from '../../lib/auth';
+import { canAccessAdminIssues, canAccessEmployeePanel, isMainAdmin } from '../../lib/auth';
 
 const static_card_style = 'rounded-xl bg-white p-6 shadow-sm ring-1 ring-black/5';
 
 export default function DashboardOverview() {
   const { appUser } = useAuth();
-  const [stats, setStats] = useState({ myIssues: 0, resources: 0, posts: 0 });
+  const [stats, setStats] = useState({ myIssues: 0, resources: 0, posts: 0, assignedIssues: 0 });
 
   useEffect(() => {
     async function load() {
       try {
-        const [issues, resources, posts] = await Promise.all([
+        const employeeIssuesRequest = canAccessEmployeePanel(appUser)
+          ? api.get('/v1/employee/issues')
+          : Promise.resolve({ data: { total: 0 } });
+
+        const [issues, resources, posts, employeeIssues] = await Promise.all([
           api.get('/v1/issues/me'),
           api.get('/v1/resources'),
           api.get('/v1/community/posts?sort=hot'),
+          employeeIssuesRequest,
         ]);
         setStats({
           myIssues: issues.data.total ?? 0,
           resources: resources.data.length ?? 0,
           posts: posts.data.length ?? 0,
+          assignedIssues: employeeIssues.data.total ?? 0,
         });
       } catch (error) {
         console.error('Overview load failed', error);
       }
     }
     load();
-  }, []);
+  }, [appUser]);
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-12 gap-8 pb-20 text-gray-900">
@@ -83,6 +89,12 @@ export default function DashboardOverview() {
               <p className="text-3xl font-bold tracking-tight text-gray-900">{stats.resources}</p>
               <p className="text-xs text-gray-500 font-medium mt-1">Resources</p>
             </div>
+            {canAccessEmployeePanel(appUser) && (
+              <div>
+                <p className="text-3xl font-bold tracking-tight text-gray-900">{stats.assignedIssues}</p>
+                <p className="text-xs text-gray-500 font-medium mt-1">Assigned to You</p>
+              </div>
+            )}
           </div>
         </div>
       </div>
@@ -94,6 +106,10 @@ export default function DashboardOverview() {
           {[
             { to: '/home/issues/new', label: 'Create a new issue', description: 'Report infrastructure or civic problems in your area.', icon: FilePlus2 },
             { to: '/home/issues/me', label: 'Track my issues', description: 'See the status and updates of your filed reports.', icon: ClipboardList },
+            { to: '/home/chatbot', label: 'Open AI chatbot', description: 'Chat with the Cerebras Qwen assistant, attach photos, share location, and create complaints.', icon: MessagesSquare },
+            ...(canAccessEmployeePanel(appUser)
+              ? [{ to: '/employee/issues', label: 'Handle assigned issues', description: 'Open the employee panel to update the complaints allocated to you.', icon: Wrench }]
+              : []),
             { to: '/home/community', label: 'Open community discussions', description: 'Share ideas and participate in local conversations.', icon: MessageSquare },
             { to: '/home/resources', label: 'Browse resources', description: 'Access guides and documents shared by administrators.', icon: LibraryBig },
             { to: '/home/assistant', label: 'Ask assistant', description: 'Get AI-powered help with your civic needs.', icon: Bot },
@@ -128,7 +144,7 @@ export default function DashboardOverview() {
           <div className="flex gap-3 flex-wrap">
             {canAccessAdminIssues(appUser) && (
               <Link
-                to="/home/admin/issues"
+                to="/admin/issues"
                 className="rounded-full ring-1 ring-gray-200 bg-gray-50 px-4 py-2 text-sm font-semibold text-gray-700 shadow-sm transition-colors duration-200 hover:bg-gray-100"
               >
                 Admin issue queue
@@ -137,19 +153,33 @@ export default function DashboardOverview() {
             {isMainAdmin(appUser) && (
               <>
                 <Link
-                  to="/home/admin/departments"
+                  to="/admin/departments"
                   className="rounded-full ring-1 ring-gray-200 bg-gray-50 px-4 py-2 text-sm font-semibold text-gray-700 shadow-sm transition-colors duration-200 hover:bg-gray-100"
                 >
                   Manage departments
                 </Link>
                 <Link
-                  to="/home/admin/clusters"
+                  to="/admin/clusters"
                   className="rounded-full ring-1 ring-gray-200 bg-gray-50 px-4 py-2 text-sm font-semibold text-gray-700 shadow-sm transition-colors duration-200 hover:bg-gray-100"
                 >
                   Issue clusters
                 </Link>
               </>
             )}
+          </div>
+        </div>
+      )}
+
+      {canAccessEmployeePanel(appUser) && (
+        <div className={`md:col-span-12 ${static_card_style}`}>
+          <h2 className="text-lg font-bold tracking-tight text-gray-900 mb-5">Employee Workspace</h2>
+          <div className="flex gap-3 flex-wrap">
+            <Link
+              to="/employee/issues"
+              className="rounded-full ring-1 ring-emerald-200 bg-emerald-50 px-4 py-2 text-sm font-semibold text-emerald-800 shadow-sm transition-colors duration-200 hover:bg-emerald-100"
+            >
+              Open employee panel
+            </Link>
           </div>
         </div>
       )}

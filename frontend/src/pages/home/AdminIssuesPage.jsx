@@ -113,6 +113,18 @@ export default function AdminIssuesPage() {
                     ))}
                   </div>
                 )}
+
+                {selectedIssue.resolution_photo_url && (
+                  <div className="space-y-3 rounded-xl border border-emerald-200 bg-emerald-50 p-4">
+                    <p className="text-xs font-semibold uppercase tracking-wider text-emerald-700">Completion Proof</p>
+                    <img
+                      src={selectedIssue.resolution_photo_url}
+                      alt="Completion proof"
+                      className="w-full h-48 object-cover rounded-xl ring-1 ring-black/5 shadow-sm"
+                    />
+                    {selectedIssue.resolution_note && <p className="text-sm text-emerald-900">{selectedIssue.resolution_note}</p>}
+                  </div>
+                )}
               </div>
 
               <div className="h-px bg-gray-100" />

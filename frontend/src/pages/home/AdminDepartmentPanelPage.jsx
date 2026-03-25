@@ -108,21 +108,24 @@ export default function AdminDepartmentPanelPage() {
 
       <div className="grid gap-6 lg:grid-cols-[1fr_1.2fr]">
         <div className={`${static_card_style} space-y-4`}>
-          <p className="text-xs font-semibold uppercase tracking-wider text-gray-500">Available People</p>
+          <p className="text-xs font-semibold uppercase tracking-wider text-gray-500">Department Employees</p>
           <form onSubmit={addPerson} className="space-y-3">
             <input
               className="w-full rounded-xl border border-gray-200 bg-gray-50 p-3 text-sm focus:border-sky-300 focus:bg-white focus:outline-none focus:ring-2 focus:ring-sky-500/20"
-              placeholder="Person name"
+              placeholder="Employee name"
               value={name}
               onChange={(event) => setName(event.target.value)}
               required
             />
             <input
               className="w-full rounded-xl border border-gray-200 bg-gray-50 p-3 text-sm focus:border-sky-300 focus:bg-white focus:outline-none focus:ring-2 focus:ring-sky-500/20"
-              placeholder="Email (optional)"
+              placeholder="Sign-in email for employee panel access"
               value={email}
               onChange={(event) => setEmail(event.target.value)}
             />
+            <p className="text-xs text-gray-500">
+              Use the employee&apos;s real sign-in email. When the same person logs in with that email, they can open the employee panel and see issues assigned to them.
+            </p>
             <button className="rounded-xl bg-gray-900 px-4 py-2.5 text-sm font-bold text-white hover:bg-gray-800">
               Add Person
             </button>
@@ -135,6 +138,9 @@ export default function AdminDepartmentPanelPage() {
                 <div>
                   <p className="text-sm font-semibold text-gray-900">{person.name}</p>
                   <p className="text-xs text-gray-500">{person.email || 'No email'}</p>
+                  <p className={`text-[11px] font-semibold ${person.email ? 'text-emerald-700' : 'text-amber-700'}`}>
+                    {person.email ? 'Employee panel enabled for this email' : 'Add an email to enable employee login access'}
+                  </p>
                 </div>
                 <button
                   onClick={() => deletePerson(person.id)}

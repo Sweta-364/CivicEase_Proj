@@ -2,6 +2,7 @@ import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import PublicLayout from './layouts/PublicLayout';
 import DashboardLayout from './layouts/DashboardLayout';
 import AdminLayout from './layouts/AdminLayout';
+import EmployeeLayout from './layouts/EmployeeLayout';
 import Home from './pages/Home';
 import SignIn from './pages/SignIn';
 import DashboardOverview from './pages/home/DashboardOverview';
@@ -12,14 +13,17 @@ import CommunityPage from './pages/home/CommunityPage';
 import CommunityPostPage from './pages/home/CommunityPostPage';
 import ResourcesPage from './pages/home/ResourcesPage';
 import AssistantPage from './pages/home/AssistantPage';
+import ChatbotPage from './pages/home/ChatbotPage';
 import AdminIssuesPage from './pages/home/AdminIssuesPage';
 import AdminDepartmentsPage from './pages/home/AdminDepartmentsPage';
 import AdminDepartmentPanelPage from './pages/home/AdminDepartmentPanelPage';
 import AdminClustersPage from './pages/home/AdminClustersPage';
 import AdminResourceCreatePage from './pages/home/AdminResourceCreatePage';
 import AdminMapPage from './pages/home/AdminMapPage';
+import EmployeeIssuesPage from './pages/home/EmployeeIssuesPage';
+import EmployeeIssueDetailPage from './pages/home/EmployeeIssueDetailPage';
 import { useAuth } from './context/useAuth';
-import { canAccessAdminIssues, canCreateAdminResource, isMainAdmin } from './lib/auth';
+import { canAccessAdminIssues, canAccessEmployeePanel, canCreateAdminResource, isMainAdmin } from './lib/auth';
 
 function RequireAuth({ children }) {
   const { appUser, loading } = useAuth();
@@ -43,6 +47,12 @@ function RequireAdminIssuesAccess({ children }) {
 function RequireAdminResourceAccess({ children }) {
   const { appUser } = useAuth();
   if (!canCreateAdminResource(appUser)) return <Navigate to="/home" replace />;
+  return children;
+}
+
+function RequireEmployeeAccess({ children }) {
+  const { appUser } = useAuth();
+  if (!canAccessEmployeePanel(appUser)) return <Navigate to="/home" replace />;
   return children;
 }
 
@@ -71,7 +81,23 @@ export default function App() {
           <Route path="community" element={<CommunityPage />} />
           <Route path="community/:postId" element={<CommunityPostPage />} />
           <Route path="resources" element={<ResourcesPage />} />
+          <Route path="chatbot" element={<ChatbotPage />} />
           <Route path="assistant" element={<AssistantPage />} />
+        </Route>
+
+        <Route
+          path="/employee"
+          element={
+            <RequireAuth>
+              <RequireEmployeeAccess>
+                <EmployeeLayout />
+              </RequireEmployeeAccess>
+            </RequireAuth>
+          }
+        >
+          <Route index element={<Navigate to="issues" replace />} />
+          <Route path="issues" element={<EmployeeIssuesPage />} />
+          <Route path="issues/:issueId" element={<EmployeeIssueDetailPage />} />
         </Route>
 
         <Route
