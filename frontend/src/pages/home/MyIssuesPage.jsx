@@ -4,6 +4,7 @@ import api from '../../api';
 import { CardSkeleton } from '../../components/Skeletons';
 
 const static_card_style = 'rounded-xl bg-white p-6 shadow-sm ring-1 ring-black/5';
+const ISSUE_REFRESH_KEY = 'civicease_issue_refresh_token';
 
 function statusBadge(status) {
   const map = {
@@ -33,19 +34,53 @@ function formatAssigneeLabel(issue) {
 export default function MyIssuesPage() {
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+
+  async function loadIssues({ background = false } = {}) {
+    if (!background) {
+      setLoading(true);
+    }
+    setError('');
+
+    try {
+      const response = await api.get('/v1/issues/me');
+      setItems(response.data.items ?? []);
+    } catch (loadError) {
+      console.error(loadError);
+      setError(loadError?.response?.data?.detail || 'Failed to load your issues.');
+    } finally {
+      setLoading(false);
+    }
+  }
 
   useEffect(() => {
-    async function load() {
-      try {
-        const response = await api.get('/v1/issues/me');
-        setItems(response.data.items ?? []);
-      } catch (error) {
-        console.error(error);
-      } finally {
-        setLoading(false);
+    void loadIssues();
+
+    function handleFocus() {
+      void loadIssues({ background: true });
+    }
+
+    function handleVisibilityChange() {
+      if (document.visibilityState === 'visible') {
+        void loadIssues({ background: true });
       }
     }
-    load();
+
+    function handleStorage(event) {
+      if (event.key === ISSUE_REFRESH_KEY) {
+        void loadIssues({ background: true });
+      }
+    }
+
+    window.addEventListener('focus', handleFocus);
+    window.addEventListener('storage', handleStorage);
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
+    return () => {
+      window.removeEventListener('focus', handleFocus);
+      window.removeEventListener('storage', handleStorage);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
   }, []);
 
   if (loading) return (
@@ -66,6 +101,12 @@ export default function MyIssuesPage() {
         <p className="text-xs font-semibold uppercase tracking-wider text-gray-500 mb-2">Your Reports</p>
         <h1 className="text-2xl font-bold tracking-tight text-gray-900">My Issues</h1>
       </div>
+
+      {error && (
+        <div className={`${static_card_style} border border-red-200 bg-red-50 text-sm text-red-700`}>
+          {error}
+        </div>
+      )}
 
       {items.length === 0 && (
         <div className={`${static_card_style} flex flex-col items-center justify-center p-12 text-center`}>

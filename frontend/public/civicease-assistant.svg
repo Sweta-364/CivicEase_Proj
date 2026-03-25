@@ -1,0 +1,23 @@
+<svg width="160" height="160" viewBox="0 0 160 160" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="28" y1="20" x2="132" y2="140" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#22C55E"/>
+      <stop offset="0.52" stop-color="#0EA5E9"/>
+      <stop offset="1" stop-color="#2563EB"/>
+    </linearGradient>
+    <linearGradient id="roof" x1="80" y1="34" x2="80" y2="62" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#F8FAFC"/>
+      <stop offset="1" stop-color="#DBEAFE"/>
+    </linearGradient>
+  </defs>
+  <rect x="12" y="12" width="136" height="136" rx="36" fill="url(#bg)"/>
+  <circle cx="80" cy="80" r="58" fill="white" fill-opacity="0.18"/>
+  <path d="M44 64L80 38L116 64" stroke="url(#roof)" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/>
+  <rect x="50" y="66" width="60" height="50" rx="8" fill="#F8FAFC"/>
+  <rect x="44" y="112" width="72" height="10" rx="5" fill="#DBEAFE"/>
+  <rect x="60" y="72" width="10" height="38" rx="5" fill="#93C5FD"/>
+  <rect x="75" y="72" width="10" height="38" rx="5" fill="#60A5FA"/>
+  <rect x="90" y="72" width="10" height="38" rx="5" fill="#3B82F6"/>
+  <circle cx="80" cy="52" r="6" fill="#FEF3C7"/>
+  <path d="M70 124H90" stroke="#BFDBFE" stroke-width="8" stroke-linecap="round"/>
+</svg>
