@@ -8,9 +8,10 @@ const static_card_style = 'rounded-xl bg-white p-6 shadow-sm ring-1 ring-black/5
 function statusBadge(status) {
   const map = {
     in_progress: { label: 'In Progress', cls: 'bg-amber-50 text-amber-800 ring-amber-100' },
+    pending_review: { label: 'Pending Review', cls: 'bg-sky-50 text-sky-800 ring-sky-100' },
     resolved: { label: 'Resolved', cls: 'bg-emerald-50 text-emerald-800 ring-emerald-100' },
   };
-  const info = map[status] || { label: 'Open', cls: 'bg-sky-50 text-sky-800 ring-sky-100' };
+  const info = map[status] || { label: 'Open', cls: 'bg-gray-50 text-gray-800 ring-gray-100' };
   return (
     <span className={`rounded-full px-3 py-1 text-[11px] font-bold uppercase tracking-wider ring-1 ${info.cls}`}>
       {info.label}
@@ -106,9 +107,9 @@ export default function EmployeeIssueDetailPage() {
       setPhoto(null);
       setNote('');
       if (fileInputRef.current) fileInputRef.current.value = '';
-      setMessage('Issue resolved and proof uploaded successfully.');
+      setMessage('Work submitted for review successfully.');
     } catch (actionError) {
-      setError(actionError?.response?.data?.detail || actionError.message || 'Failed to resolve the issue.');
+      setError(actionError?.response?.data?.detail || actionError.message || 'Failed to submit work.');
       setMessage('');
     } finally {
       setBusy(false);
@@ -118,6 +119,8 @@ export default function EmployeeIssueDetailPage() {
   if (loading) return <p className="text-sm text-gray-500 animate-pulse-glow">Loading assigned issue...</p>;
   if (!issue) return <p className="text-sm text-red-600">Assigned issue not found.</p>;
 
+  const canSubmit = issue.status !== 'resolved' && issue.status !== 'pending_review';
+
   return (
     <div className="space-y-6 max-w-4xl">
       <div className="flex flex-wrap items-start justify-between gap-4">
@@ -125,7 +128,9 @@ export default function EmployeeIssueDetailPage() {
           <p className="text-xs font-semibold uppercase tracking-wider text-gray-500 mb-2">Employee Issue</p>
           <h1 className="text-2xl font-bold tracking-tight text-gray-900">{issue.title || `Issue #${issue.id}`}</h1>
           <p className="mt-2 text-sm text-gray-600 leading-relaxed">
-            Upload one image after the work is done so the complaint can be marked resolved.
+            {issue.status === 'pending_review' 
+              ? 'Your work has been submitted and is currently being reviewed by the department.'
+              : 'Upload one image after the work is done so the complaint can be sent for review.'}
           </p>
         </div>
         {statusBadge(issue.status)}
@@ -168,12 +173,12 @@ export default function EmployeeIssueDetailPage() {
         </div>
       )}
 
-      {issue.status !== 'resolved' && (
+      {canSubmit && (
         <div className={`${static_card_style} space-y-4`}>
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div>
               <p className="text-xs font-semibold uppercase tracking-wider text-gray-500 mb-1">Work Update</p>
-              <p className="text-sm text-gray-600">Start the work if needed, then upload one completion image and submit the resolution.</p>
+              <p className="text-sm text-gray-600">Start the work if needed, then upload one completion image and submit for review.</p>
             </div>
             {issue.status === 'open' && (
               <button
@@ -212,33 +217,39 @@ export default function EmployeeIssueDetailPage() {
             <button
               type="submit"
               disabled={busy}
-              className="rounded-xl bg-emerald-600 px-5 py-3 text-sm font-bold text-white transition-colors hover:bg-emerald-500 disabled:opacity-50"
+              className="rounded-xl bg-sky-600 px-5 py-3 text-sm font-bold text-white transition-colors hover:bg-sky-500 disabled:opacity-50"
             >
-              {busy ? 'Processing...' : 'Upload Proof & Mark Resolved'}
+              {busy ? 'Processing...' : 'Upload Proof & Submit for Review'}
             </button>
           </form>
         </div>
       )}
 
-      {issue.resolution_photo_url && (
+      {(issue.resolution_photo_url || issue.status === 'pending_review') && (
         <div className={`${static_card_style} space-y-4`}>
           <div>
             <p className="text-xs font-semibold uppercase tracking-wider text-gray-500 mb-2">Completion Proof</p>
-            <h2 className="text-lg font-bold text-gray-900">Resolved Update</h2>
+            <h2 className="text-lg font-bold text-gray-900">
+              {issue.status === 'pending_review' ? 'Submitted Work' : 'Resolved Update'}
+            </h2>
           </div>
-          <img
-            src={issue.resolution_photo_url}
-            alt="Resolution proof"
-            className="w-full rounded-2xl object-cover ring-1 ring-black/5 shadow-sm"
-          />
+          {issue.resolution_photo_url && (
+            <img
+              src={issue.resolution_photo_url}
+              alt="Resolution proof"
+              className="w-full rounded-2xl object-cover ring-1 ring-black/5 shadow-sm"
+            />
+          )}
           {issue.resolution_note && (
             <div className="rounded-xl bg-gray-50 px-4 py-3 text-sm text-gray-700 ring-1 ring-gray-100">
               {issue.resolution_note}
             </div>
           )}
-          <p className="text-xs font-semibold uppercase tracking-wider text-gray-500">
-            Resolved At: {formatTimestamp(issue.resolved_at)}
-          </p>
+          {issue.resolved_at && (
+            <p className="text-xs font-semibold uppercase tracking-wider text-gray-500">
+              Resolved At: {formatTimestamp(issue.resolved_at)}
+            </p>
+          )}
         </div>
       )}
     </div>

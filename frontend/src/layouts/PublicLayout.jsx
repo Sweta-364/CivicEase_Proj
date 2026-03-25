@@ -6,6 +6,8 @@ const navigation = [
   { name: 'Home', href: '/' },
   { name: 'How It Works', href: '/how-it-works' },
   { name: 'Services', href: '/services' },
+  { name: 'Voice Assistant', href: '/home/assistant' },
+  { name: 'AI Chatbot', href: '/home/chatbot' },
   { name: 'About', href: '/about' },
   { name: 'Contact', href: '/contact' },
 ];

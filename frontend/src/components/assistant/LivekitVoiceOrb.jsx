@@ -62,7 +62,10 @@ const waveHeights = {
 
 function orbitStyle(duration, delay = '0s', reverse = false) {
   return {
-    animation: `spin ${duration} linear infinite`,
+    animationName: 'spin',
+    animationDuration: duration,
+    animationTimingFunction: 'linear',
+    animationIterationCount: 'infinite',
     animationDelay: delay,
     animationDirection: reverse ? 'reverse' : 'normal',
   };

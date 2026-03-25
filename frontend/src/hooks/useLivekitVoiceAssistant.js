@@ -49,10 +49,67 @@ export function useLivekitVoiceAssistant({ selectedLanguageCode, displayName }) 
   const [connectionState, setConnectionState] = useState(ConnectionState.Disconnected);
 
   const roomRef = useRef(null);
+  const remoteAudioElementsRef = useRef(new Map());
   const isMutedRef = useRef(false);
   const awaitingAgentRef = useRef(false);
   const localWasSpeakingRef = useRef(false);
   const remoteWasSpeakingRef = useRef(false);
+
+  function getTrackKey(track) {
+    if (!track) return null;
+    return track.sid || track.mediaStreamID || null;
+  }
+
+  function detachRemoteAudioTrack(track) {
+    const trackKey = getTrackKey(track);
+    if (!trackKey) return;
+
+    const entry = remoteAudioElementsRef.current.get(trackKey);
+    if (!entry) return;
+
+    try {
+      entry.track.detach(entry.element);
+    } catch {
+      // Best effort cleanup only.
+    }
+
+    if (entry.element?.parentNode) {
+      entry.element.parentNode.removeChild(entry.element);
+    }
+
+    remoteAudioElementsRef.current.delete(trackKey);
+  }
+
+  function cleanupRemoteAudioElements() {
+    remoteAudioElementsRef.current.forEach((entry) => {
+      try {
+        entry.track.detach(entry.element);
+      } catch {
+        // Best effort cleanup only.
+      }
+
+      if (entry.element?.parentNode) {
+        entry.element.parentNode.removeChild(entry.element);
+      }
+    });
+
+    remoteAudioElementsRef.current.clear();
+  }
+
+  function attachRemoteAudioTrack(track) {
+    if (!track || track.kind !== Track.Kind.Audio || typeof document === 'undefined') return;
+
+    const trackKey = getTrackKey(track);
+    if (!trackKey || remoteAudioElementsRef.current.has(trackKey)) return;
+
+    const element = track.attach();
+    element.autoplay = true;
+    element.playsInline = true;
+    element.style.display = 'none';
+    document.body.appendChild(element);
+
+    remoteAudioElementsRef.current.set(trackKey, { track, element });
+  }
 
   const sessionIdentity = useMemo(
     () => ({
@@ -68,6 +125,7 @@ export function useLivekitVoiceAssistant({ selectedLanguageCode, displayName }) 
 
   useEffect(() => {
     return () => {
+      cleanupRemoteAudioElements();
       if (roomRef.current) {
         void roomRef.current.disconnect();
       }
@@ -80,6 +138,8 @@ export function useLivekitVoiceAssistant({ selectedLanguageCode, displayName }) 
       await targetRoom.disconnect();
     } catch {
       // Best effort disconnect only.
+    } finally {
+      cleanupRemoteAudioElements();
     }
   }
 
@@ -152,13 +212,17 @@ export function useLivekitVoiceAssistant({ selectedLanguageCode, displayName }) 
             setPhase(PHASES.listening);
           }
         })
-        .on(RoomEvent.TrackSubscribed, (_track, publication, participant) => {
+        .on(RoomEvent.TrackSubscribed, (track, publication, participant) => {
           if (
             publication.kind === Track.Kind.Audio &&
             participant.identity !== nextRoom.localParticipant.identity
           ) {
+            attachRemoteAudioTrack(track);
             setAgentConnected(true);
           }
+        })
+        .on(RoomEvent.TrackUnsubscribed, (track) => {
+          detachRemoteAudioTrack(track);
         })
         .on(RoomEvent.TranscriptionReceived, (segments, participant) => {
           const isUser = participant?.identity === nextRoom.localParticipant.identity;
@@ -225,6 +289,7 @@ export function useLivekitVoiceAssistant({ selectedLanguageCode, displayName }) 
 
   async function endSession() {
     await disconnectRoom(roomRef.current);
+    cleanupRemoteAudioElements();
     roomRef.current = null;
     setRoom(null);
     setConnectionState(ConnectionState.Disconnected);

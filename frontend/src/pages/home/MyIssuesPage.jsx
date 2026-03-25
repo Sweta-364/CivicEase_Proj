@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import api from '../../api';
 import { CardSkeleton } from '../../components/Skeletons';
+import { CheckCircle2 } from 'lucide-react';
 
 const static_card_style = 'rounded-xl bg-white p-6 shadow-sm ring-1 ring-black/5';
 const ISSUE_REFRESH_KEY = 'civicease_issue_refresh_token';
@@ -122,7 +123,15 @@ export default function MyIssuesPage() {
             className={`${static_card_style} block transition-all duration-200 hover:shadow-md hover:-translate-y-0.5`}
           >
             <div className="flex items-start justify-between gap-3">
-              <p className="text-sm font-bold text-gray-900 line-clamp-2">{issue.title || `Issue #${issue.id}`}</p>
+              <div className="flex flex-col gap-1">
+                <p className="text-sm font-bold text-gray-900 line-clamp-2">{issue.title || `Issue #${issue.id}`}</p>
+                {issue.reporter_is_verified && (
+                  <div className="flex items-center gap-1 text-[10px] font-bold text-emerald-600 uppercase tracking-tight bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-100 w-fit">
+                    <CheckCircle2 className="h-2.5 w-2.5" />
+                    Verified
+                  </div>
+                )}
+              </div>
               {statusBadge(issue.status)}
             </div>
 

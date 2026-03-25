@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import api from '../../api';
 import { IssueDetailSkeleton } from '../../components/Skeletons';
+import { CheckCircle2, ShieldCheck } from 'lucide-react';
 
 const static_card_style = 'rounded-xl bg-white p-6 shadow-sm ring-1 ring-black/5';
 
@@ -50,7 +51,15 @@ export default function IssueDetailPage() {
     <div className="space-y-6">
       <div>
         <p className="text-xs font-semibold uppercase tracking-wider text-gray-500 mb-2">Issue #{issue.id}</p>
-        <h1 className="text-2xl font-bold tracking-tight text-gray-900">{issue.title || 'Untitled Issue'}</h1>
+        <div className="flex flex-wrap items-center gap-3">
+          <h1 className="text-2xl font-bold tracking-tight text-gray-900">{issue.title || 'Untitled Issue'}</h1>
+          {issue.reporter_is_verified && (
+            <div className="flex items-center gap-1.5 bg-emerald-50 text-emerald-700 ring-1 ring-emerald-600/20 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest shadow-sm">
+              <ShieldCheck className="h-3.5 w-3.5" />
+              Verified Reporter
+            </div>
+          )}
+        </div>
       </div>
 
       <div className={static_card_style}>

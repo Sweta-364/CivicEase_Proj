@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { ArrowRight, ClipboardList, FilePlus2, LibraryBig, MessageSquare, Bot } from 'lucide-react';
 import api from '../../api';
 import { useAuth } from '../../context/useAuth';
-import { canAccessAdminIssues, isMainAdmin } from '../../lib/auth';
+import { canAccessAdminIssues, isMainAdmin, canAccessEmployeePanel } from '../../lib/auth';
 import { DashboardOverviewSkeleton } from '../../components/Skeletons';
 
 const static_card_style = 'rounded-xl bg-white p-6 shadow-sm ring-1 ring-black/5';
@@ -154,8 +154,29 @@ export default function DashboardOverview() {
                 >
                   Issue clusters
                 </Link>
+                <Link
+                  to="/home/admin/cluster-map"
+                  className="rounded-full ring-1 ring-gray-200 bg-gray-50 px-4 py-2 text-sm font-semibold text-gray-700 shadow-sm transition-colors duration-200 hover:bg-gray-100"
+                >
+                  Cluster map
+                </Link>
               </>
             )}
+          </div>
+        </div>
+      )}
+
+      {/* Employee Panel Link */}
+      {canAccessEmployeePanel(appUser) && (
+        <div className={`md:col-span-12 ${static_card_style}`}>
+          <h2 className="text-lg font-bold tracking-tight text-gray-900 mb-5">Employee Panel</h2>
+          <div className="flex gap-3 flex-wrap">
+            <Link
+              to="/employee/issues"
+              className="rounded-full ring-1 ring-gray-200 bg-gray-50 px-4 py-2 text-sm font-semibold text-gray-700 shadow-sm transition-colors duration-200 hover:bg-gray-100"
+            >
+              My assigned issues
+            </Link>
           </div>
         </div>
       )}

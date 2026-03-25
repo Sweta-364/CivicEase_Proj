@@ -3,6 +3,7 @@ import api from '../../api';
 import { useAuth } from '../../context/useAuth';
 import { getDepartmentAdminIds, isMainAdmin } from '../../lib/auth';
 import { Link } from 'react-router-dom';
+import { CheckCircle2, ShieldCheck, Loader2 } from 'lucide-react';
 
 const static_card_style = 'rounded-xl bg-white p-6 shadow-sm ring-1 ring-black/5';
 
@@ -72,7 +73,15 @@ export default function AdminIssuesPage() {
               }`}
             >
               <div className="flex items-center justify-between mb-1">
-                <p className="font-bold text-gray-900 line-clamp-1">{issue.title || `Issue #${issue.id}`}</p>
+                <div className="flex flex-col gap-0.5 min-w-0">
+                  <p className="font-bold text-gray-900 line-clamp-1">{issue.title || `Issue #${issue.id}`}</p>
+                  {issue.reporter_is_verified && (
+                    <div className="flex items-center gap-1 text-[9px] font-black text-emerald-600 uppercase tracking-tighter">
+                      <CheckCircle2 className="h-2.5 w-2.5" />
+                      Verified
+                    </div>
+                  )}
+                </div>
                 <span className="text-xs text-gray-500 shrink-0 ml-2">#{issue.id}</span>
               </div>
               <p className="line-clamp-2 text-xs text-gray-600 leading-relaxed">{issue.description}</p>
@@ -86,7 +95,15 @@ export default function AdminIssuesPage() {
             <div className="space-y-6">
               <div className="space-y-4">
                 <div>
-                  <h2 className="text-xl font-bold text-gray-900">{selectedIssue.title || `Issue #${selectedIssue.id}`}</h2>
+                  <div className="flex flex-wrap items-center gap-3">
+                    <h2 className="text-xl font-bold text-gray-900">{selectedIssue.title || `Issue #${selectedIssue.id}`}</h2>
+                    {selectedIssue.reporter_is_verified && (
+                      <div className="flex items-center gap-1.5 bg-emerald-50 text-emerald-700 ring-1 ring-emerald-600/20 px-2.5 py-1 rounded-full text-[9px] font-black uppercase tracking-widest shadow-sm">
+                        <ShieldCheck className="h-3 w-3" />
+                        Verified Reporter
+                      </div>
+                    )}
+                  </div>
                   <div className="mt-2 flex flex-wrap gap-2 text-xs">
                     <span className="rounded-full bg-blue-50 px-2.5 py-1 font-semibold text-blue-700 ring-1 ring-blue-600/20">
                       Status: {selectedIssue.status}

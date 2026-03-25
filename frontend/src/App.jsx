@@ -24,7 +24,9 @@ import AdminDepartmentsPage from './pages/home/AdminDepartmentsPage';
 import AdminDepartmentPanelPage from './pages/home/AdminDepartmentPanelPage';
 import AdminClustersPage from './pages/home/AdminClustersPage';
 import AdminResourceCreatePage from './pages/home/AdminResourceCreatePage';
+import ProfilePage from './pages/home/ProfilePage';
 import AdminMapPage from './pages/home/AdminMapPage';
+import ClusterMapPage from './pages/home/ClusterMapPage';
 import EmployeeIssuesPage from './pages/home/EmployeeIssuesPage';
 import EmployeeIssueDetailPage from './pages/home/EmployeeIssueDetailPage';
 import { useAuth } from './context/useAuth';
@@ -33,7 +35,7 @@ import { canAccessAdminIssues, canAccessEmployeePanel, canCreateAdminResource, i
 function RequireAuth({ children }) {
   const { appUser, loading } = useAuth();
   if (loading) return (
-    <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-slate-50 via-sky-50/40 to-white">
+    <div className="flex min-h-screen items-center justify-center bg-linear-to-br from-slate-50 via-sky-50/40 to-white">
       <div className="flex flex-col items-center gap-5">
         {/* Spinning logo ring */}
         <div className="relative">
@@ -49,7 +51,7 @@ function RequireAuth({ children }) {
         </div>
         {/* Animated progress bar */}
         <div className="h-1 w-40 overflow-hidden rounded-full bg-gray-200">
-          <div className="h-full w-2/5 animate-pulse rounded-full bg-gradient-to-r from-sky-400 to-cyan-400" style={{ animationDuration: '1s' }} />
+          <div className="h-full w-2/5 animate-pulse rounded-full bg-linear-to-r from-sky-400 to-cyan-400" style={{ animationDuration: '1s' }} />
         </div>
       </div>
     </div>
@@ -114,6 +116,7 @@ export default function App() {
           <Route path="resources" element={<ResourcesPage />} />
           <Route path="chatbot" element={<ChatbotPage />} />
           <Route path="assistant" element={<AssistantPage />} />
+          <Route path="profile" element={<ProfilePage />} />
         </Route>
 
         <Route
@@ -146,6 +149,14 @@ export default function App() {
               <RequireAdminIssuesAccess>
                 <AdminMapPage />
               </RequireAdminIssuesAccess>
+            }
+          />
+          <Route
+            path="cluster-map"
+            element={
+              <RequireMainAdmin>
+                <ClusterMapPage />
+              </RequireMainAdmin>
             }
           />
           <Route

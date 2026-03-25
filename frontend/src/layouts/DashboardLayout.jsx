@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react';
 import { Link, NavLink, Outlet, useNavigate, useLocation } from 'react-router-dom';
-import { Building2, Bot, ClipboardList, FilePlus2, FolderKanban, HelpCircle, Layers3, LibraryBig, LogOut, Menu, MessageSquare, X } from 'lucide-react';
+import { Building2, Bot, ClipboardList, FilePlus2, FolderKanban, HelpCircle, Layers3, LibraryBig, LogOut, Menu, MessageSquare, X, User } from 'lucide-react';
 import { auth } from '../firebaseConfig';
 import { useAuth } from '../context/useAuth';
-import { canAccessAdminIssues, canCreateAdminResource, isMainAdmin } from '../lib/auth';
+import { canAccessAdminIssues, canCreateAdminResource, isMainAdmin, canAccessEmployeePanel } from '../lib/auth';
 import Grainient from '../components/bg/Grainient';
 import DashboardHeader from '../components/DashboardHeader';
 
@@ -15,7 +15,9 @@ const navItems = [
   { to: '/home/issues/me', label: 'My Issues', icon: ClipboardList },
   { to: '/home/community', label: 'Community', icon: MessageSquare },
   { to: '/home/resources', label: 'Resources', icon: LibraryBig },
-  { to: '/home/assistant', label: 'Assistant', icon: Bot },
+  { to: '/home/assistant', label: 'Voice Assistant', icon: Bot },
+  { to: '/home/chatbot', label: 'AI Chatbot', icon: Bot },
+  { to: '/home/profile', label: 'My Profile', icon: User },
 ];
 
 function SidebarLink({ to, label, icon, end = false, collapsed, onClick }) {
@@ -49,6 +51,7 @@ export default function DashboardLayout() {
   const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false);
 
   const hasAdminAccess = canAccessAdminIssues(appUser) || isMainAdmin(appUser) || canCreateAdminResource(appUser);
+  const hasEmployeeAccess = canAccessEmployeePanel(appUser);
 
   // Close mobile drawer on route change
   useEffect(() => {
@@ -118,6 +121,22 @@ export default function DashboardLayout() {
               <Layers3 className="h-[18px] w-[18px]" />
             </div>
             {(isMobile || !sidebarCollapsed) && <span className="text-[14px] font-semibold tracking-tight">Admin Panel</span>}
+          </button>
+        )}
+
+        {hasEmployeeAccess && (
+          <button
+            className={`group w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-amber-700 hover:text-amber-900 hover:bg-amber-50/50 transition-all duration-200 ease-in-out ${(!isMobile && sidebarCollapsed) ? 'justify-center' : ''}`}
+            title={(!isMobile && sidebarCollapsed) ? 'Employee Panel' : ''}
+            onClick={() => {
+              navigate('/employee/issues');
+              if (isMobile) setMobileDrawerOpen(false);
+            }}
+          >
+            <div className="group-hover:scale-105 transition-all duration-200">
+              <ClipboardList className="h-[18px] w-[18px]" />
+            </div>
+            {(isMobile || !sidebarCollapsed) && <span className="text-[14px] font-semibold tracking-tight">Employee Panel</span>}
           </button>
         )}
 

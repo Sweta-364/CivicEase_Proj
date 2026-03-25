@@ -21,7 +21,7 @@ function MapBounds({ issues }) {
       const validIssues = issues.filter(i => i.latitude && i.longitude);
       if (validIssues.length > 0) {
         const bounds = L.latLngBounds(validIssues.map(i => [i.latitude, i.longitude]));
-        map.fitBounds(bounds, { padding: [50, 50], maxZoom: 15 });
+        map.fitBounds(bounds, { padding: [50, 50], maxZoom: 18 });
       }
     }
   }, [issues, map]);
@@ -58,24 +58,32 @@ export default function AdminMapPage() {
           <p className="text-xs font-semibold uppercase tracking-wider text-gray-500 mb-2">Administration</p>
           <h1 className="text-2xl font-bold tracking-tight text-gray-900">Issues Map</h1>
         </div>
-        <Link 
-          to="/admin/issues" 
-          className="rounded-xl bg-gray-100 px-4 py-2 text-sm font-bold text-gray-700 hover:bg-gray-200 transition-colors"
-        >
-          Back to List
-        </Link>
+        <div className="flex items-center gap-3">
+          <Link
+            to="/admin/cluster-map"
+            className="rounded-xl bg-gray-900 px-4 py-2 text-sm font-bold text-white hover:bg-gray-800 transition-colors"
+          >
+            Cluster Map
+          </Link>
+          <Link
+            to="/admin/issues"
+            className="rounded-xl bg-gray-100 px-4 py-2 text-sm font-bold text-gray-700 hover:bg-gray-200 transition-colors"
+          >
+            Back to List
+          </Link>
+        </div>
       </div>
 
       <div className="flex-1 rounded-xl overflow-hidden ring-1 ring-black/5 shadow-sm border border-gray-200 z-0 relative">
-        <MapContainer center={defaultCenter} zoom={13} className="w-full h-full">
+        <MapContainer center={defaultCenter} zoom={16} className="w-full h-full">
           <TileLayer
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           />
           <MapBounds issues={issues} />
-          
+
           {clusters.filter(c => c.centroid_latitude && c.centroid_longitude).map(cluster => (
-            <Circle 
+            <Circle
               key={`cluster-${cluster.id}`}
               center={[cluster.centroid_latitude, cluster.centroid_longitude]}
               radius={CLUSTER_RADIUS}
