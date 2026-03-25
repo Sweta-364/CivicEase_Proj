@@ -224,39 +224,6 @@ export default function Services() {
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="bg-gradient-to-br from-blue-900 via-blue-800 to-cyan-900 rounded-3xl overflow-hidden relative">
                         <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1517090504586-fde19ea6066f?auto=format&fit=crop&w=2000&q=80')] bg-cover bg-center opacity-10"></div>
-
-                        <div className="relative px-8 py-16 sm:p-16">
-                            <div className="text-center mb-12">
-                                <h2 className="text-4xl sm:text-5xl font-black text-white mb-4">
-                                    Our Impact
-                                </h2>
-                                <p className="text-xl text-blue-100 max-w-2xl mx-auto">
-                                    Making a real difference in communities across the nation
-                                </p>
-                            </div>
-
-                            <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-8">
-                                {[
-                                    { value: '12,847', label: 'Issues Resolved', icon: CheckCircle },
-                                    { value: '45,231', label: 'Active Citizens', icon: Shield },
-                                    { value: '2.4 hrs', label: 'Avg Response', icon: Lightbulb },
-                                    { value: '94%', label: 'Satisfaction', icon: Building2 }
-                                ].map((stat, idx) => {
-                                    const Icon = stat.icon;
-                                    return (
-                                        <div key={idx} className="text-center">
-                                            <Icon className="w-12 h-12 text-cyan-400 mx-auto mb-4" />
-                                            <div className="text-5xl font-black text-white mb-2">
-                                                {stat.value}
-                                            </div>
-                                            <div className="text-blue-200 font-semibold">
-                                                {stat.label}
-                                            </div>
-                                        </div>
-                                    );
-                                })}
-                            </div>
-                        </div>
                     </div>
                 </div>
             </section>

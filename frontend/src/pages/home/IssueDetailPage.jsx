@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import api from '../../api';
+import { IssueDetailSkeleton } from '../../components/Skeletons';
 
 const static_card_style = 'rounded-xl bg-white p-6 shadow-sm ring-1 ring-black/5';
 
@@ -35,7 +36,7 @@ export default function IssueDetailPage() {
     load();
   }, [issueId]);
 
-  if (loading) return <p className="text-sm text-gray-500 animate-pulse-glow">Loading issue...</p>;
+  if (loading) return <IssueDetailSkeleton />;
   if (!issue) return <p className="text-sm text-red-600">Issue not found or access denied.</p>;
 
   return (

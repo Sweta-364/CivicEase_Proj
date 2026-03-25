@@ -1,0 +1,24 @@
+.scroll-stack-scroller {
+    position: relative;
+    width: 100%;
+}
+
+.scroll-stack-inner {
+    position: relative;
+    width: 100%;
+}
+
+.scroll-stack-card {
+    position: relative;
+    width: 100%;
+    transform-origin: top center;
+    will-change: transform, filter;
+    /* Ensure clean rendering of scaled elements */
+    backface-visibility: hidden;
+    -webkit-font-smoothing: antialiased;
+}
+
+.scroll-stack-end {
+    width: 100%;
+    pointer-events: none;
+}

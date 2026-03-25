@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { ArrowRight, Building2, UserRound } from 'lucide-react';
+import { Building2, Shield, Sparkles } from 'lucide-react';
 import { auth, provider, signInWithPopup } from '../firebaseConfig';
 import { useAuth } from '../context/useAuth';
 
 const GoogleIcon = () => (
-  <svg width="20" height="20" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+  <svg width="22" height="22" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
     <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4" />
     <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853" />
     <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05" />
@@ -36,77 +36,106 @@ export default function SignIn() {
   };
 
   return (
-    <div className="min-h-screen bg-[radial-gradient(circle_at_top_left,rgba(103,232,249,0.24),transparent_24%),radial-gradient(circle_at_bottom_right,rgba(14,165,233,0.18),transparent_28%),linear-gradient(180deg,#f8fcff_0%,#eef7ff_100%)] px-4 py-12">
-      <div className="mx-auto max-w-6xl">
-        <Link to="/" className="mb-8 inline-flex items-center gap-2 text-sm font-semibold text-slate-600 transition hover:text-slate-950">
-          <Building2 className="h-4 w-4" />
-          Back to landing page
+    <div className="flex min-h-screen">
+      {/* ─── LEFT PANEL ─── */}
+      <div className="flex flex-1 flex-col justify-between bg-white px-8 py-10 sm:px-16 lg:px-24">
+        {/* Logo / Back */}
+        <Link
+          to="/"
+          className="inline-flex items-center gap-2.5 text-lg font-black tracking-tight text-slate-900 transition hover:text-cyan-600"
+        >
+          CivicEase
         </Link>
 
-        <div className="grid gap-8 lg:grid-cols-[1.05fr_0.95fr]">
-          <section className="rounded-[32px] bg-slate-950 p-10 text-white shadow-2xl shadow-slate-950/15">
-            <span className="inline-flex rounded-full border border-white/10 bg-white/5 px-4 py-2 text-xs font-bold uppercase tracking-[0.24em] text-cyan-200">
-              Initial architecture
-            </span>
-            <h1 className="mt-8 max-w-xl text-5xl font-black tracking-tight">
-              Landing first, sign in next, dashboard at <span className="text-cyan-300">`/home`</span>.
-            </h1>
-            <p className="mt-6 max-w-2xl text-lg leading-8 text-slate-300">
-              This flow now matches the `acm2k26` pattern more closely: public discovery stays separate, and operational
-              features live inside a dedicated dashboard shell after sign-in.
-            </p>
+        {/* Form area */}
+        <div className="mx-auto w-full max-w-md">
+          <h1 className="text-4xl font-black tracking-tight text-slate-900">
+            Welcome back
+          </h1>
+          <p className="mt-3 text-base text-slate-500">
+            Sign in to your account to continue
+          </p>
 
-            <div className="mt-10 grid gap-4 sm:grid-cols-3">
-              {['Landing page', 'Google sign-in', 'Dashboard workspace'].map((step, index) => (
-                <div key={step} className="rounded-3xl border border-white/10 bg-white/5 p-5">
-                  <p className="text-xs font-bold uppercase tracking-[0.2em] text-slate-500">Step {index + 1}</p>
-                  <p className="mt-3 text-lg font-bold text-white">{step}</p>
-                </div>
-              ))}
+          {error && (
+            <div className="mt-6 rounded-2xl border border-red-200 bg-red-50 px-5 py-3.5 text-sm font-medium text-red-600">
+              {error}
             </div>
-          </section>
+          )}
 
-          <section className="rounded-[32px] border border-white/60 bg-white/80 p-8 shadow-xl shadow-sky-950/5 backdrop-blur-xl">
-            <div className="mb-8">
-              <p className="text-sm font-semibold uppercase tracking-[0.22em] text-sky-700">Choose a workspace</p>
-              <h2 className="mt-2 text-3xl font-black tracking-tight text-slate-950">Continue into CivicEase</h2>
-              <p className="mt-3 text-sm leading-7 text-slate-600">
-                Sign in with Google to open the `/home` workspace. Access to reporter and admin features is resolved from backend roles.
-              </p>
-            </div>
-
-            {error && (
-              <div className="mb-4 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-600">
-                {error}
-              </div>
+          {/* Google Sign-In Button */}
+          <button
+            onClick={handleGoogleSignIn}
+            disabled={loadingGoogle}
+            className="group mt-10 flex w-full items-center justify-center gap-3 rounded-2xl border-2 border-slate-200 bg-white px-6 py-4 text-base font-bold text-slate-800 shadow-sm transition-all duration-300 hover:border-cyan-400 hover:bg-cyan-50/40 hover:shadow-lg hover:shadow-cyan-500/10 disabled:cursor-not-allowed disabled:opacity-60"
+          >
+            <GoogleIcon />
+            {loadingGoogle ? (
+              <span className="flex items-center gap-2">
+                <svg className="h-5 w-5 animate-spin text-cyan-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                </svg>
+                Connecting...
+              </span>
+            ) : (
+              'Sign in with Google'
             )}
+          </button>
 
-            <div className="space-y-4">
-              <button
-                onClick={handleGoogleSignIn}
-                disabled={loadingGoogle}
-                className="group w-full rounded-[28px] border border-slate-200 bg-white p-6 text-left shadow-sm transition hover:-translate-y-1 hover:shadow-xl disabled:cursor-not-allowed disabled:opacity-60"
-              >
-                <div className="flex items-start justify-between gap-4">
-                  <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-sky-500 to-cyan-400 text-white shadow-lg">
-                    <UserRound className="h-6 w-6" />
-                  </div>
-                  <ArrowRight className="mt-1 h-5 w-5 text-slate-400 transition group-hover:translate-x-1 group-hover:text-slate-800" />
-                </div>
-                <h3 className="mt-5 text-xl font-black tracking-tight text-slate-950">Citizen access</h3>
-                <p className="mt-2 text-sm leading-7 text-slate-600">
-                  Enter the dashboard with Firebase Google sign-in, then access `/home` features based on your assigned roles.
-                </p>
-                <div className="mt-5 inline-flex items-center gap-3 rounded-full border border-slate-200 bg-slate-50 px-4 py-2 text-sm font-semibold text-slate-700">
-                  <GoogleIcon />
-                  {loadingGoogle ? 'Connecting...' : 'Continue with Google'}
-                </div>
-              </button>
+          {/* Divider */}
+          <div className="mt-10 flex items-center gap-4">
+            <div className="h-px flex-1 bg-slate-200" />
+            <span className="text-xs font-semibold uppercase tracking-widest text-slate-400">
+              Secure access
+            </span>
+            <div className="h-px flex-1 bg-slate-200" />
+          </div>
+
+          {/* Trust badges */}
+          <div className="mt-8 grid grid-cols-2 gap-4">
+            <div className="flex items-center gap-3 rounded-xl bg-slate-50 px-4 py-3">
+              <Shield className="h-5 w-5 text-cyan-500" />
+              <span className="text-xs font-semibold text-slate-600">Firebase Auth</span>
             </div>
-          </section>
+            <div className="flex items-center gap-3 rounded-xl bg-slate-50 px-4 py-3">
+              <Sparkles className="h-5 w-5 text-cyan-500" />
+              <span className="text-xs font-semibold text-slate-600">Role-based access</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Footer */}
+        <p className="text-xs text-slate-400">
+          © 2026 CivicEase. All rights reserved.
+        </p>
+      </div>
+
+      {/* ─── RIGHT PANEL (Illustration) ─── */}
+      <div className="hidden flex-col items-center justify-center overflow-hidden bg-[#0f172a] p-12 lg:flex lg:w-[48%]"
+        style={{ position: 'relative' }}
+      >
+        {/* Decorative gradient blobs */}
+        <div className="pointer-events-none absolute inset-0">
+          <div className="absolute -top-20 -right-20 h-[400px] w-[400px] rounded-full bg-cyan-500/15 blur-[100px]" />
+          <div className="absolute -bottom-32 -left-20 h-[350px] w-[350px] rounded-full bg-blue-600/20 blur-[100px]" />
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-[300px] w-[300px] rounded-full bg-sky-500/10 blur-[80px]" />
+        </div>
+
+        {/* Illustration */}
+        <div className="relative z-10 max-w-md flex flex-col items-center text-center">
+          <img
+            src="/signin-illustration.png"
+            alt="CivicEase platform illustration"
+            className="w-80 h-80 object-contain drop-shadow-2xl"
+          />
+          <h2 className="mt-10 text-3xl font-black tracking-tight text-white">
+            Your city, <span className="text-cyan-400">your voice</span>
+          </h2>
+          <p className="mt-4 max-w-sm text-base leading-relaxed text-slate-400">
+            Report civic issues, track resolutions in real-time, and help build a better community — all from one platform.
+          </p>
         </div>
       </div>
     </div>
   );
 }
-

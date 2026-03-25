@@ -4,12 +4,14 @@ import { ArrowRight, ClipboardList, FilePlus2, LibraryBig, MessageSquare, Bot } 
 import api from '../../api';
 import { useAuth } from '../../context/useAuth';
 import { canAccessAdminIssues, isMainAdmin } from '../../lib/auth';
+import { DashboardOverviewSkeleton } from '../../components/Skeletons';
 
 const static_card_style = 'rounded-xl bg-white p-6 shadow-sm ring-1 ring-black/5';
 
 export default function DashboardOverview() {
   const { appUser } = useAuth();
   const [stats, setStats] = useState({ myIssues: 0, resources: 0, posts: 0 });
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     async function load() {
@@ -26,10 +28,14 @@ export default function DashboardOverview() {
         });
       } catch (error) {
         console.error('Overview load failed', error);
+      } finally {
+        setLoading(false);
       }
     }
     load();
   }, []);
+
+  if (loading) return <DashboardOverviewSkeleton />;
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-12 gap-8 pb-20 text-gray-900">

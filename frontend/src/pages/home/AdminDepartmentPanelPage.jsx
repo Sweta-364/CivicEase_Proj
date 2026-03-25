@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import api from '../../api';
+import { Skeleton } from '../../components/Skeletons';
 
 const static_card_style = 'rounded-xl bg-white p-6 shadow-sm ring-1 ring-black/5';
 
@@ -90,7 +91,28 @@ export default function AdminDepartmentPanelPage() {
     }
   }
 
-  if (loading) return <p className="text-sm text-gray-500">Loading department panel...</p>;
+  if (loading) return (
+    <div className="space-y-6">
+      <div className="space-y-2">
+        <Skeleton className="h-3 w-28" />
+        <Skeleton className="h-8 w-2/5" />
+        <Skeleton className="h-4 w-3/5" />
+      </div>
+      <div className="grid gap-6 lg:grid-cols-[1fr_1.2fr]">
+        <div className="rounded-xl bg-white p-6 shadow-sm ring-1 ring-black/5 space-y-4">
+          <Skeleton className="h-3 w-28" />
+          <Skeleton className="h-10 w-full rounded-xl" />
+          <Skeleton className="h-10 w-full rounded-xl" />
+          <Skeleton className="h-9 w-24 rounded-xl" />
+          {[1, 2].map((i) => <Skeleton key={i} className="h-14 w-full rounded-xl" />)}
+        </div>
+        <div className="rounded-xl bg-white p-6 shadow-sm ring-1 ring-black/5 space-y-3">
+          <Skeleton className="h-3 w-32" />
+          {[1, 2, 3].map((i) => <Skeleton key={i} className="h-32 w-full rounded-xl" />)}
+        </div>
+      </div>
+    </div>
+  );
   if (!panel) return <p className="text-sm text-red-600">Department panel not found.</p>;
 
   const people = panel.people ?? [];

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import api from '../../api';
+import { CardSkeleton } from '../../components/Skeletons';
 
 const static_card_style = 'rounded-xl bg-white p-6 shadow-sm ring-1 ring-black/5';
 
@@ -47,7 +48,17 @@ export default function MyIssuesPage() {
     load();
   }, []);
 
-  if (loading) return <p className="text-sm text-gray-500 animate-pulse-glow">Loading issues...</p>;
+  if (loading) return (
+    <div className="space-y-6">
+      <div>
+        <p className="text-xs font-semibold uppercase tracking-wider text-gray-500 mb-2">Your Reports</p>
+        <h1 className="text-2xl font-bold tracking-tight text-gray-900">My Issues</h1>
+      </div>
+      <div className="space-y-3">
+        {[1, 2, 3].map((i) => <CardSkeleton key={i} lines={2} showBadge showImage={i === 1} />)}
+      </div>
+    </div>
+  );
 
   return (
     <div className="space-y-6">

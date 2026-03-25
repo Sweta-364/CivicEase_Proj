@@ -25,23 +25,23 @@ export default function DashboardHeader({ title = 'Dashboard', subtitle = 'Your 
   const initial = appUser?.display_name?.charAt(0) || appUser?.email?.charAt(0) || 'U';
 
   return (
-    <div className="mb-6 flex items-center justify-between">
-      <div>
-        <h1 className="text-2xl font-bold text-gray-800">{title}</h1>
-        <p className="text-sm text-gray-500">{subtitle}</p>
+    <div className="mb-8 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+      <div className="min-w-0">
+        <h1 className="text-xl font-bold text-white truncate sm:text-2xl drop-shadow-sm">{title}</h1>
+        <p className="text-sm text-white/70 truncate">{subtitle}</p>
       </div>
 
       <div className="relative flex items-center gap-3" ref={menuRef}>
         {/* Info button */}
         <button
-          className="flex h-10 w-10 items-center justify-center rounded-full border-2 border-gray-200 bg-gray-50 transition-colors hover:bg-gray-100"
+          className="flex h-10 w-10 items-center justify-center rounded-full bg-white/20 backdrop-blur-md border border-white/20 transition-colors hover:bg-white/30"
           aria-label="Info"
           onClick={() => {
             setShowInfo((prev) => !prev);
             setShowProfile(false);
           }}
         >
-          <Info className="h-4 w-4 text-gray-700" />
+          <Info className="h-4 w-4 text-white" />
         </button>
 
         {showInfo && (
@@ -59,14 +59,14 @@ export default function DashboardHeader({ title = 'Dashboard', subtitle = 'Your 
 
         {/* Profile pill */}
         <div className="relative">
-          <div className="flex h-12 items-center gap-3 rounded-full border-2 border-gray-200 bg-gray-50 px-4">
+          <div className="flex h-10 items-center gap-2 rounded-full bg-white/20 backdrop-blur-md border border-white/20 px-3 sm:h-12 sm:gap-3 sm:px-4">
             {/* Notification bell */}
             <button
-              className="relative flex h-9 w-9 items-center justify-center rounded-full transition-colors hover:bg-gray-100"
+              className="relative flex h-8 w-8 items-center justify-center rounded-full transition-colors hover:bg-white/20 sm:h-9 sm:w-9"
               aria-label="Notifications"
             >
-              <Bell className="h-4 w-4 text-gray-700" />
-              <span className="absolute right-0 top-0 flex h-4 w-4 items-center justify-center rounded-full border-2 border-white bg-sky-500 text-[10px] font-bold text-white">
+              <Bell className="h-4 w-4 text-white" />
+              <span className="absolute right-0 top-0 flex h-4 w-4 items-center justify-center rounded-full border-2 border-white/30 bg-sky-500 text-[10px] font-bold text-white">
                 3
               </span>
             </button>
@@ -79,16 +79,16 @@ export default function DashboardHeader({ title = 'Dashboard', subtitle = 'Your 
                 setShowInfo(false);
               }}
             >
-              <div className="h-8 w-8 overflow-hidden rounded-full border-2 border-gray-700">
+              <div className="h-8 w-8 overflow-hidden rounded-full border-2 border-white/40">
                 <div className="flex h-full w-full items-center justify-center bg-sky-500 text-sm font-bold text-white">
                   {initial.toUpperCase()}
                 </div>
               </div>
               <div className="hidden text-left sm:block">
-                <div className="text-[14px] font-bold text-gray-700">{appUser?.display_name || 'User'}</div>
-                <div className="max-w-[140px] truncate text-[10px] text-gray-400">{appUser?.email || ''}</div>
+                <div className="text-[14px] font-bold text-white">{appUser?.display_name || 'User'}</div>
+                <div className="max-w-[140px] truncate text-[10px] text-white/60">{appUser?.email || ''}</div>
               </div>
-              <ChevronDown className="h-4 w-4 text-gray-700" />
+              <ChevronDown className="h-4 w-4 text-white/80" />
             </button>
           </div>
 

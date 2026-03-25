@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import api from '../../api';
+import { PostDetailSkeleton } from '../../components/Skeletons';
 
 const static_card_style = 'rounded-xl bg-white p-6 shadow-sm ring-1 ring-black/5';
 
@@ -73,7 +74,7 @@ export default function CommunityPostPage() {
     await load();
   }
 
-  if (!post) return <p className="text-sm text-gray-500 animate-pulse-glow">Loading post...</p>;
+  if (!post) return <PostDetailSkeleton />;
 
   return (
     <div className="space-y-6">

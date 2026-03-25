@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import api from '../../api';
+import { SpinnerWithMessage } from '../../components/Skeletons';
 
 const static_card_style = 'rounded-xl bg-white p-6 shadow-sm ring-1 ring-black/5';
 
@@ -83,7 +84,7 @@ export default function CommunityPage() {
           disabled={loading}
           className="rounded-xl bg-gray-900 px-5 py-3 text-sm font-bold text-white transition-colors hover:bg-gray-800 disabled:opacity-50 active:scale-[0.98]"
         >
-          {loading ? 'Posting...' : 'Create Post'}
+          {loading ? <SpinnerWithMessage message="Posting..." size="sm" /> : 'Create Post'}
         </button>
       </form>
 

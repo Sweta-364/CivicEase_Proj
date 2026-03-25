@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import api from '../../api';
+import { TypingIndicator, SpinnerWithMessage } from '../../components/Skeletons';
 
 const static_card_style = 'rounded-xl bg-white p-6 shadow-sm ring-1 ring-black/5';
 
@@ -44,11 +45,12 @@ export default function AssistantPage() {
           className="shrink-0 rounded-xl bg-gray-900 px-5 py-3 text-sm font-bold text-white transition-colors hover:bg-gray-800 disabled:opacity-50 active:scale-[0.98]"
           disabled={loading}
         >
-          {loading ? 'Sending...' : 'Send'}
+          {loading ? <SpinnerWithMessage message="Thinking..." size="sm" /> : 'Send'}
         </button>
       </form>
 
       <div className="space-y-4">
+        {loading && <TypingIndicator />}
         {history.map((item, index) => (
           <div key={index} className={static_card_style}>
             <div className="flex items-start gap-3 mb-3">
