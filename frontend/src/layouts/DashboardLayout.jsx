@@ -1,9 +1,9 @@
-import { useState, useEffect } from 'react';
-import { Link, NavLink, Outlet, useNavigate, useLocation } from 'react-router-dom';
-import { Building2, Bot, ClipboardList, FilePlus2, FolderKanban, HelpCircle, Layers3, LibraryBig, LogOut, Menu, MessageSquare, X, User } from 'lucide-react';
+import { useState } from 'react';
+import { NavLink, Outlet, useNavigate } from 'react-router-dom';
+import { Building2, Bot, ClipboardList, FilePlus2, FolderKanban, HardHat, HelpCircle, Layers3, LibraryBig, LogOut, MessageSquare, MessagesSquare } from 'lucide-react';
 import { auth } from '../firebaseConfig';
 import { useAuth } from '../context/useAuth';
-import { canAccessAdminIssues, canCreateAdminResource, isMainAdmin, canAccessEmployeePanel } from '../lib/auth';
+import { canAccessAdminIssues, canAccessEmployeePanel, canCreateAdminResource, isMainAdmin } from '../lib/auth';
 import Grainient from '../components/bg/Grainient';
 import DashboardHeader from '../components/DashboardHeader';
 
@@ -15,9 +15,8 @@ const navItems = [
   { to: '/home/issues/me', label: 'My Issues', icon: ClipboardList },
   { to: '/home/community', label: 'Community', icon: MessageSquare },
   { to: '/home/resources', label: 'Resources', icon: LibraryBig },
-  { to: '/home/assistant', label: 'Voice Assistant', icon: Bot },
-  { to: '/home/chatbot', label: 'AI Chatbot', icon: Bot },
-  { to: '/home/profile', label: 'My Profile', icon: User },
+  { to: '/home/chatbot', label: 'AI Chatbot', icon: MessagesSquare },
+  { to: '/home/assistant', label: 'Assistant', icon: Bot },
 ];
 
 function SidebarLink({ to, label, icon, end = false, collapsed, onClick }) {
@@ -124,22 +123,6 @@ export default function DashboardLayout() {
           </button>
         )}
 
-        {hasEmployeeAccess && (
-          <button
-            className={`group w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-amber-700 hover:text-amber-900 hover:bg-amber-50/50 transition-all duration-200 ease-in-out ${(!isMobile && sidebarCollapsed) ? 'justify-center' : ''}`}
-            title={(!isMobile && sidebarCollapsed) ? 'Employee Panel' : ''}
-            onClick={() => {
-              navigate('/employee/issues');
-              if (isMobile) setMobileDrawerOpen(false);
-            }}
-          >
-            <div className="group-hover:scale-105 transition-all duration-200">
-              <ClipboardList className="h-[18px] w-[18px]" />
-            </div>
-            {(isMobile || !sidebarCollapsed) && <span className="text-[14px] font-semibold tracking-tight">Employee Panel</span>}
-          </button>
-        )}
-
         <button
           className={`group w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-neutral-700 hover:text-neutral-900 hover:bg-sky-50/50 transition-all duration-200 ease-in-out ${(!isMobile && sidebarCollapsed) ? 'justify-center' : ''}`}
           title={(!isMobile && sidebarCollapsed) ? 'Help & Support' : ''}
@@ -234,18 +217,94 @@ export default function DashboardLayout() {
           <aside
             className={`${sidebarCollapsed ? 'w-20' : 'w-[260px]'} ${box_shadow} bg-white rounded-[24px] h-full flex flex-col transition-all duration-300 ease-in-out`}
           >
-            {sidebarContent(false)}
-          </aside>
-        </div>
+<<<<<<< HEAD
+  { sidebarContent(false) }
+=======
+            {/* Logo Area */}
+            <div className="p-8 flex items-center gap-3">
+              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-sky-600 text-white">
+                <Building2 className="h-5 w-5" />
+              </span>
+              {!sidebarCollapsed && <span className="text-lg font-bold text-slate-900 tracking-tight">CivicEase</span>}
+            </div>
 
-        {/* ═══ Main Content ═══ */}
-        <main className="flex-1 overflow-y-auto w-full h-full pt-[68px] px-4 pb-6 md:pt-8 md:px-10 md:pb-10">
-          <div className="max-w-6xl mx-auto w-full">
-            <DashboardHeader />
-            <Outlet />
-          </div>
-        </main>
+            {/* Divider */}
+            <div className="mx-4 border-t border-neutral-100" />
+
+            {/* Navigation */}
+            <nav className="flex-1 px-3 pt-4 pb-3 space-y-1 overflow-y-auto">
+              {navItems.map((item) => (
+                <SidebarLink key={item.to} {...item} collapsed={sidebarCollapsed} />
+              ))}
+
+
+            </nav>
+
+            {/* Bottom area */}
+            <div className="mx-4 border-t border-neutral-100" />
+            <div className="px-3 py-3 space-y-1">
+              {hasAdminAccess && (
+                <button
+                  className={`group w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-indigo-700 hover:text-indigo-900 hover:bg-indigo-50/50 transition-all duration-200 ease-in-out ${sidebarCollapsed ? 'justify-center' : ''}`}
+                  title={sidebarCollapsed ? 'Admin Panel' : ''}
+                  onClick={() => navigate('/admin/issues')}
+                >
+                  <div className="group-hover:scale-105 transition-all duration-200">
+                    <Layers3 className="h-[18px] w-[18px]" />
+                  </div>
+                  {!sidebarCollapsed && <span className="text-[14px] font-semibold tracking-tight">Admin Panel</span>}
+                </button>
+              )}
+
+              {hasEmployeeAccess && (
+                <button
+                  className={`group w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-emerald-700 hover:text-emerald-900 hover:bg-emerald-50/60 transition-all duration-200 ease-in-out ${sidebarCollapsed ? 'justify-center' : ''}`}
+                  title={sidebarCollapsed ? 'Employee Panel' : ''}
+                  onClick={() => navigate('/employee/issues')}
+                >
+                  <div className="group-hover:scale-105 transition-all duration-200">
+                    <HardHat className="h-[18px] w-[18px]" />
+                  </div>
+                  {!sidebarCollapsed && <span className="text-[14px] font-semibold tracking-tight">Employee Panel</span>}
+                </button>
+              )}
+              
+              <button
+                className={`group w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-neutral-700 hover:text-neutral-900 hover:bg-sky-50/50 transition-all duration-200 ease-in-out ${sidebarCollapsed ? 'justify-center' : ''}`}
+                title={sidebarCollapsed ? 'Help & Support' : ''}
+              >
+                <div className="group-hover:scale-105 group-hover:text-gray-700 transition-all duration-200">
+                  <HelpCircle className="h-[18px] w-[18px]" />
+                </div>
+                {!sidebarCollapsed && <span className="text-[14px] font-medium tracking-tight">Help & Support</span>}
+              </button>
+
+              <button
+                className={`group w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-red-600 hover:bg-red-50 transition-all duration-200 ease-in-out ${sidebarCollapsed ? 'justify-center' : ''}`}
+                title={sidebarCollapsed ? 'Sign out' : ''}
+                onClick={async () => {
+                  await auth.signOut();
+                  navigate('/signin');
+                }}
+              >
+                <div className="group-hover:scale-105 transition-all duration-200">
+                  <LogOut className="h-[18px] w-[18px]" />
+                </div>
+                {!sidebarCollapsed && <span className="text-[14px] font-medium tracking-tight">Sign out</span>}
+              </button>
+            </div>
+>>>>>>> 40149a82724ca5e6b96068e17ee76982f422cc2e
+          </aside >
+        </div >
+
+    {/* ═══ Main Content ═══ */ }
+    < main className = "flex-1 overflow-y-auto w-full h-full pt-[68px] px-4 pb-6 md:pt-8 md:px-10 md:pb-10" >
+      <div className="max-w-6xl mx-auto w-full">
+        <DashboardHeader />
+        <Outlet />
       </div>
-    </div>
+        </main >
+      </div >
+    </div >
   );
 }
